@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ListView listView = (ListView)findViewById(R.id.listView);
-        listView.setAdapter(new GlumacAdapter(this, DataProvider.getInstance().getGlumci()));
+
+        listView.setAdapter(new GlumacAdapter(DataProvider.getInstance().getGlumci()));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

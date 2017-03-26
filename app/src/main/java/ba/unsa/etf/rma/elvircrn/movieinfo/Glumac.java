@@ -12,7 +12,7 @@ public class Glumac implements Serializable{
                 .toString();
     }
 
-    enum Spol { MUSKI, ZENSKI, NONBINARY };
+    public enum Spol { MUSKI, ZENSKI, NONBINARY };
 
     public Glumac(String ime,
                   String prezime,
