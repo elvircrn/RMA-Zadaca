@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="glumac" type="ba.unsa.etf.rma.elvircrn.movieinfo.Glumac"/>
-        <import type="ba.unsa.etf.rma.elvircrn.movieinfo.Glumac.Spol"/>
+        <variable name="glumac" type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac"/>
+        <import type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac.Spol"/>
     </data>
 
 
@@ -16,12 +16,13 @@
         <TextView
             android:id="@+id/imePrezimeTextView"
             android:layout_width="wrap_content"
-            android:layout_height="17dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text='@{glumac.ime + " " + glumac.prezime}'
-            app:layout_constraintTop_toTopOf="parent"
+            android:text='@{glumac.fullName}'
+            android:textSize="24sp"
             app:layout_constraintLeft_toRightOf="@+id/imageView"
-            android:layout_marginLeft="8dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/godineTextView"
@@ -80,7 +81,7 @@
             android:id="@+id/imageView"
             android:layout_width="162dp"
             android:layout_height="174dp"
-            app:srcCompat="@drawable/profilna"
+            app:imageUrl='@{glumac.imageUrl}'
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"

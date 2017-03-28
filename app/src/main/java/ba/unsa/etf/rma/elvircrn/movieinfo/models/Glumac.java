@@ -1,7 +1,10 @@
-package ba.unsa.etf.rma.elvircrn.movieinfo;
+package ba.unsa.etf.rma.elvircrn.movieinfo.models;
+
 
 import java.io.Serializable;
 import java.util.Locale;
+
+import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Helpers;
 
 public class Glumac implements Serializable{
     public String getGodinaFormatted() {
@@ -43,6 +46,25 @@ public class Glumac implements Serializable{
     private Spol spol;
     private String biografija;
     private String imdbLink;
+    private String imgUrl;
+
+    public Glumac(String ime, String prezime, String mjestoRodjenja, int godinaRodjenja, int rating, int godinaSmrti, Spol spol, String biografija, String imdbLink, String imageUrl) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.mjestoRodjenja = mjestoRodjenja;
+        this.godinaRodjenja = godinaRodjenja;
+        this.rating = rating;
+        this.godinaSmrti = godinaSmrti;
+        this.spol = spol;
+        this.biografija = biografija;
+        this.imdbLink = imdbLink;
+        this.imgUrl = imageUrl;
+    }
+
+
+    public void setImageUrl(String imageUrl) {
+        this.imgUrl = imageUrl;
+    }
 
     public String getImdbLink() {
         return imdbLink;
@@ -124,5 +146,7 @@ public class Glumac implements Serializable{
                                                   .append(prezime).toString(), "");
     }
 
-    public Glumac() { }
+    public String getImageUrl() {
+        return imgUrl;
+    }
 }

@@ -1,4 +1,4 @@
-package ba.unsa.etf.rma.elvircrn.movieinfo;
+package ba.unsa.etf.rma.elvircrn.movieinfo.helpers;
 
 
 public class Helpers {

@@ -1,5 +1,7 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac;
+
 public class GlumacBuilder {
     private String ime = "Stan";
     private String prezime = "Lee";
@@ -7,9 +9,15 @@ public class GlumacBuilder {
     private int godinaRodjenja = 1921;
     private int rating = 5;
     private int godinaSmrti = -1;
-    private Glumac.Spol spol = Glumac.Spol.MUSKI;
+    private Glumac.Spol spol = Glumac.Spol.MUSKI; // random.org
     private String biografija = "BIOGRAFIJA";
     private String imdbLink = "https://www.google.com";
+    private String imgUrl = "tsm1";
+
+    public GlumacBuilder setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+        return this;
+    }
 
     public GlumacBuilder setIme(String ime) {
         this.ime = ime;
@@ -57,6 +65,6 @@ public class GlumacBuilder {
     }
 
     public Glumac createGlumac() {
-        return new Glumac(ime, prezime, mjestoRodjenja, godinaRodjenja, rating, godinaSmrti, spol, biografija, imdbLink);
+        return new Glumac(ime, prezime, mjestoRodjenja, godinaRodjenja, rating, godinaSmrti, spol, biografija, imdbLink, imgUrl);
     }
 }

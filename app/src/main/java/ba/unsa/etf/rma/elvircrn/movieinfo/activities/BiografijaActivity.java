@@ -1,5 +1,6 @@
-package ba.unsa.etf.rma.elvircrn.movieinfo;
+package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -7,15 +8,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac;
+import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActivityBiografijaBinding;
 
 public class BiografijaActivity extends AppCompatActivity {
     Glumac glumac;
-
     private ActivityBiografijaBinding binding;
 
     @Override
@@ -46,8 +47,14 @@ public class BiografijaActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
-                i.setData(Uri.parse(glumac.getBiografija()));
-                startActivity(i);
+                i.putExtra(Intent.EXTRA_TEXT, glumac.getBiografija());
+                i.setType("text/plain");
+
+                // Provjera da li uopste postoji app koji podrzava ovu vrstu intenta. resolveActivity()
+                // vraca null za slucaj da ne postoji.
+                if (i.resolveActivity(getPackageManager()) != null) {
+                    startActivity(i);
+                }
             }
         });
     }
