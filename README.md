@@ -14,11 +14,11 @@ Implementiran layout za glumca sadrzi sve sto i onaj u pdf-u
 Sve stavke implementirane.
 
 ## Zadatak 3
-a) Implementirano
-b) Implementirano
-c) Implementirano
+    a) Implementirano
+    b) Implementirano
+    c) Implementirano
 
 ## Zadatak 4
-a) Klikom na imdb dugme, aplikacija pokrece browser kojem prosljedjuje imdb link glumca.
-b) 
+    a) Klikom na imdb dugme, aplikacija pokrece browser kojem prosljedjuje imdb link glumca.
+    b) 
 
