@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
-import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.GlumacAdapter;
+import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.ActorAdapter;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
@@ -26,16 +26,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void populateActors() {
-        RecyclerViewHelpers.initializeRecyclerView(recyclerView, new GlumacAdapter(DataProvider.getInstance().getActors()),
+        RecyclerViewHelpers.initializeRecyclerView(recyclerView, new ActorAdapter(DataProvider.getInstance().getActors()),
                 new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        Intent myIntent = new Intent(MainActivity.this, BiografijaActivity.class)
-                                .putExtra("Glumac", DataProvider.getInstance().getActors().get(position));
+                        Intent myIntent = new Intent(MainActivity.this, BiographyActivity.class)
+                                .putExtra("Actor", DataProvider.getInstance().getActors().get(position));
                         MainActivity.this.startActivity(myIntent);
                     }
                 }
         );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        DataProvider.getInstance().seed();
+        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     protected void setButtonOnClickListeners() {
@@ -43,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MainActivity.this.startActivity(new Intent(MainActivity.this, DirectorListActivity.class));
+                finish();
             }
         });
 
@@ -50,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 MainActivity.this.startActivity(new Intent(MainActivity.this, GenreListActivity.class));
+                finish();
             }
         });
     }

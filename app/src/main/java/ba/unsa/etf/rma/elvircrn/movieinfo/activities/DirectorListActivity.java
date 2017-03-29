@@ -29,11 +29,20 @@ public class DirectorListActivity extends AppCompatActivity {
                 null);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        DataProvider.getInstance().seed();
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
+
     protected void setButtonOnClickListeners() {
         (findViewById(R.id.actorsButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this, MainActivity.class));
+                finish();
             }
         });
 
@@ -41,6 +50,7 @@ public class DirectorListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this, GenreListActivity.class));
+                finish();
             }
         });
     }

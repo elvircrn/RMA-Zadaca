@@ -1,70 +1,70 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
-public class GlumacBuilder {
+public class ActorBuilder {
     private String ime = "Stan";
     private String prezime = "Lee";
     private String mjestoRodjenja = "New York";
     private int godinaRodjenja = 1921;
     private int rating = 5;
     private int godinaSmrti = -1;
-    private Glumac.Spol spol = Glumac.Spol.MUSKI; // random.org
+    private Actor.Gender gender = Actor.Gender.MALE; // random.org
     private String biografija = "BIOGRAFIJA";
     private String imdbLink = "https://www.google.com";
     private String imgUrl = "tsm1";
 
-    public GlumacBuilder setImgUrl(String imgUrl) {
+    public ActorBuilder setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
         return this;
     }
 
-    public GlumacBuilder setIme(String ime) {
+    public ActorBuilder setIme(String ime) {
         this.ime = ime;
         return this;
     }
 
-    public GlumacBuilder setPrezime(String prezime) {
+    public ActorBuilder setPrezime(String prezime) {
         this.prezime = prezime;
         return this;
     }
 
-    public GlumacBuilder setMjestoRodjenja(String mjestoRodjenja) {
+    public ActorBuilder setMjestoRodjenja(String mjestoRodjenja) {
         this.mjestoRodjenja = mjestoRodjenja;
         return this;
     }
 
-    public GlumacBuilder setGodinaRodjenja(int godinaRodjenja) {
+    public ActorBuilder setGodinaRodjenja(int godinaRodjenja) {
         this.godinaRodjenja = godinaRodjenja;
         return this;
     }
 
-    public GlumacBuilder setRating(int rating) {
+    public ActorBuilder setRating(int rating) {
         this.rating = rating;
         return this;
     }
 
-    public GlumacBuilder setGodinaSmrti(int godinaSmrti) {
+    public ActorBuilder setGodinaSmrti(int godinaSmrti) {
         this.godinaSmrti = godinaSmrti;
         return this;
     }
 
-    public GlumacBuilder setSpol(Glumac.Spol spol) {
-        this.spol = spol;
+    public ActorBuilder setGender(Actor.Gender gender) {
+        this.gender = gender;
         return this;
     }
 
-    public GlumacBuilder setBiografija(String biografija) {
+    public ActorBuilder setBiografija(String biografija) {
         this.biografija = biografija;
         return this;
     }
 
-    public GlumacBuilder setImdbLink(String imdbLink) {
+    public ActorBuilder setImdbLink(String imdbLink) {
         this.imdbLink = imdbLink;
         return this;
     }
 
-    public Glumac createGlumac() {
-        return new Glumac(ime, prezime, mjestoRodjenja, godinaRodjenja, rating, godinaSmrti, spol, biografija, imdbLink, imgUrl);
+    public Actor createActor() {
+        return new Actor(ime, prezime, mjestoRodjenja, godinaRodjenja, rating, godinaSmrti, gender, biografija, imdbLink, imgUrl);
     }
 }

@@ -1,12 +1,22 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.binders;
 
-import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.net.Uri;
+import android.support.v4.content.ContextCompat;
+import android.text.Layout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import ba.unsa.etf.rma.elvircrn.movieinfo.R;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
 public class DataBinder {
     private DataBinder() {
+    }
+
+    @BindingAdapter("genderColor")
+    public static void setGenderColor(RelativeLayout relativeLayout, Actor.Gender gender) {
+        relativeLayout.setBackgroundColor(ContextCompat.getColor(relativeLayout.getContext(),
+                gender == Actor.Gender.MALE ? R.color.colorMale : R.color.colorFemale));
     }
 
     // Custom Binder za ubacivanje slike sa Url-a u ImageView

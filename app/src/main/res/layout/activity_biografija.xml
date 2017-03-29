@@ -4,14 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="glumac" type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac"/>
-        <import type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Glumac.Spol"/>
+        <variable name="actor" type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor"/>
+        <import type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor.Gender"/>
+        <import type="ba.unsa.etf.rma.elvircrn.movieinfo.R" />
+
     </data>
 
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background='@{actor.gender == Gender.MALE ? @color/colorMale : @color/colorFemale}'>
 
         <TextView
             android:id="@+id/imePrezimeTextView"
@@ -19,7 +22,11 @@
             android:layout_height="30dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="16dp"
-            android:text='@{glumac.fullName}'
+            android:maxLines="1"
+            android:maxWidth="180dp"
+            android:ellipsize="end"
+            android:text='@{actor.fullName}'
+            android:textStyle="bold"
             android:textSize="24sp"
             app:layout_constraintLeft_toRightOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,7 +35,7 @@
             android:id="@+id/godineTextView"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
-            android:text='@{String.valueOf(glumac.godinaRodjenja) + " " + (glumac.godinaSmrti &lt; 0 ? " " : String.valueOf(glumac.godinaSmrti))}'
+            android:text='@{String.valueOf(actor.godinaRodjenja) + " " + (actor.godinaSmrti &lt; 0 ? " " : String.valueOf(actor.godinaSmrti))}'
             app:layout_constraintLeft_toRightOf="@+id/imageView"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="35dp"
@@ -39,7 +46,7 @@
             android:id="@+id/mjestoTextView"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
-            android:text="@{glumac.mjestoRodjenja}"
+            android:text="@{actor.mjestoRodjenja}"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
             app:layout_constraintLeft_toRightOf="@+id/imageView"
             android:layout_marginLeft="8dp"
@@ -52,7 +59,7 @@
             android:id="@+id/spolTextView"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
-            android:text='@{String.valueOf(glumac.spol.MUSKI)}'
+            android:text='@{String.valueOf(actor.gender.MALE)}'
             app:layout_constraintLeft_toRightOf="@+id/imageView"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
@@ -64,10 +71,11 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="8dp"
+            android:scrollbars="vertical"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginTop="16dp"
-            android:text='@{glumac.biografija}'
+            android:text='@{actor.biografija}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -81,7 +89,7 @@
             android:id="@+id/imageView"
             android:layout_width="162dp"
             android:layout_height="174dp"
-            app:imageUrl='@{glumac.imageUrl}'
+            app:imageUrl='@{actor.imageUrl}'
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"

@@ -1,12 +1,14 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 
+import android.graphics.Color;
+
 import java.io.Serializable;
 import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Helpers;
 
-public class Glumac implements Serializable{
+public class Actor implements Serializable {
     public String getGodinaFormatted() {
         return new StringBuilder().append(String.format(Locale.getDefault(), "%d", godinaRodjenja))
                 .append(" / ")
@@ -15,24 +17,24 @@ public class Glumac implements Serializable{
                 .toString();
     }
 
-    public enum Spol { MUSKI, ZENSKI, NONBINARY };
+    public enum Gender {MALE, FEMALE, NONBINARY };
 
-    public Glumac(String ime,
-                  String prezime,
-                  String mjestoRodjenja,
-                  int godinaRodjenja,
-                  int rating,
-                  int godinaSmrti,
-                  Spol spol,
-                  String biografija,
-                  String imdbLink) {
+    public Actor(String ime,
+                 String prezime,
+                 String mjestoRodjenja,
+                 int godinaRodjenja,
+                 int rating,
+                 int godinaSmrti,
+                 Gender gender,
+                 String biografija,
+                 String imdbLink) {
         this.ime = ime;
         this.prezime = prezime;
         this.mjestoRodjenja = mjestoRodjenja;
         this.godinaRodjenja = godinaRodjenja;
         this.rating = rating;
         this.godinaSmrti = godinaSmrti;
-        this.spol = spol;
+        this.gender = gender;
         this.biografija = biografija;
         this.imdbLink = imdbLink;
     }
@@ -43,19 +45,19 @@ public class Glumac implements Serializable{
     private int godinaRodjenja;
     private int rating;
     private int godinaSmrti = -1;
-    private Spol spol;
+    private Gender gender;
     private String biografija;
     private String imdbLink;
     private String imgUrl;
 
-    public Glumac(String ime, String prezime, String mjestoRodjenja, int godinaRodjenja, int rating, int godinaSmrti, Spol spol, String biografija, String imdbLink, String imageUrl) {
+    public Actor(String ime, String prezime, String mjestoRodjenja, int godinaRodjenja, int rating, int godinaSmrti, Gender gender, String biografija, String imdbLink, String imageUrl) {
         this.ime = ime;
         this.prezime = prezime;
         this.mjestoRodjenja = mjestoRodjenja;
         this.godinaRodjenja = godinaRodjenja;
         this.rating = rating;
         this.godinaSmrti = godinaSmrti;
-        this.spol = spol;
+        this.gender = gender;
         this.biografija = biografija;
         this.imdbLink = imdbLink;
         this.imgUrl = imageUrl;
@@ -82,12 +84,12 @@ public class Glumac implements Serializable{
         this.godinaSmrti = godinaSmrti;
     }
 
-    public Spol getSpol() {
-        return spol;
+    public Gender getGender() {
+        return gender;
     }
 
-    public void setSpol(Spol spol) {
-        this.spol = spol;
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public String getBiografija() {
@@ -149,4 +151,6 @@ public class Glumac implements Serializable{
     public String getImageUrl() {
         return imgUrl;
     }
+
+    public Gender getGenderColor() { return gender; }
 }

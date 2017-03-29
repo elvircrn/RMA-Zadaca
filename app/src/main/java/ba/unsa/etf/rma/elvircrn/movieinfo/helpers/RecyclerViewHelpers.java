@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.helpers;
 
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -12,7 +13,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 public class RecyclerViewHelpers {
     /**
      * Metoda za inicijalizaciju RecyclerView-a. Layout koji se postavlja je LinearLayout, no to
-     * se moze lagano izmjeniti za potrebe nadolazecih spirala. Implementirao sam je sam.
+     * se moze lagano izmjeniti za potrebe nadolazecih spirala.
      * @param recyclerView recyclerView koji se inicijalizira
      * @param <T> adapter
      * @param <U> ViewHolder adaptera koji se koristi u svrhu binding-a

@@ -22,4 +22,8 @@ public class Director {
         this.name = name;
         this.lastName = lastName;
     }
+
+    public String getFullName() {
+        return name + " " + lastName;
+    }
 }
