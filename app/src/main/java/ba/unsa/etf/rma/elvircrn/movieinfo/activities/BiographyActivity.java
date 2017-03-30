@@ -3,11 +3,8 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageButton;
@@ -25,20 +22,12 @@ public class BiographyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biografija);
-        // setContentView(R.layout.biography_coordinator);
         actor = (Actor)getIntent().getSerializableExtra("Actor");
         binding = DataBindingUtil.setContentView(this, R.layout.activity_biografija);
-        // binding = DataBindingUtil.setContentView(this, R.layout.biography_coordinator);
         binding.setActor(actor);
         addOnButtonClickListeners();
 
         ((TextView)findViewById(R.id.bioTextView)).setMovementMethod(new ScrollingMovementMethod());
-
-        /*
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        */
     }
 
     void addOnButtonClickListeners() {

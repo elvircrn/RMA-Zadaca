@@ -33,15 +33,15 @@ public class GenreListActivity extends AppCompatActivity {
 
     protected void populateGenres() {
         RecyclerViewHelpers.initializeRecyclerView(recyclerView,
-                new GenreAdapter(DataProvider.getInstance().getGenres()),
-                null);
+                new GenreAdapter(DataProvider.getInstance().getGenres()));
     }
 
     protected void setButtonOnClickListeners() {
         (findViewById(R.id.actorsButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GenreListActivity.this.startActivity(new Intent(GenreListActivity.this, MainActivity.class));
+                GenreListActivity.this.startActivity(new Intent(GenreListActivity.this,
+                        MainActivity.class));
                 finish();
             }
         });
@@ -49,7 +49,8 @@ public class GenreListActivity extends AppCompatActivity {
         (findViewById(R.id.directorsButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GenreListActivity.this.startActivity(new Intent(GenreListActivity.this, DirectorListActivity.class));
+                GenreListActivity.this.startActivity(new Intent(GenreListActivity.this,
+                        DirectorListActivity.class));
                 finish();
             }
         });

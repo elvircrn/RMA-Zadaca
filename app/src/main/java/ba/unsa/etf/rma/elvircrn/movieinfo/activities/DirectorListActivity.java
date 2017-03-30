@@ -25,8 +25,7 @@ public class DirectorListActivity extends AppCompatActivity {
 
     protected void populateDirectors() {
         RecyclerViewHelpers.initializeRecyclerView(recyclerView,
-                new DirectorAdapter(DataProvider.getInstance().getDirectors()),
-                null);
+                new DirectorAdapter(DataProvider.getInstance().getDirectors()));
     }
 
     @Override
@@ -41,7 +40,8 @@ public class DirectorListActivity extends AppCompatActivity {
         (findViewById(R.id.actorsButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this, MainActivity.class));
+                DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this,
+                        MainActivity.class));
                 finish();
             }
         });
@@ -49,7 +49,8 @@ public class DirectorListActivity extends AppCompatActivity {
         (findViewById(R.id.genresButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this, GenreListActivity.class));
+                DirectorListActivity.this.startActivity(new Intent(DirectorListActivity.this,
+                        GenreListActivity.class));
                 finish();
             }
         });

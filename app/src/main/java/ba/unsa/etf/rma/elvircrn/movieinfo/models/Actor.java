@@ -1,12 +1,10 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 
-import android.graphics.Color;
-
 import java.io.Serializable;
 import java.util.Locale;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Helpers;
+import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 public class Actor implements Serializable {
     public String getGodinaFormatted() {
@@ -143,7 +141,7 @@ public class Actor implements Serializable {
     }
 
     public String getFullName() {
-        return Helpers.coalesce(new StringBuffer().append(ime)
+        return JHelpers.coalesce(new StringBuffer().append(ime)
                                                   .append(" ")
                                                   .append(prezime).toString(), "");
     }

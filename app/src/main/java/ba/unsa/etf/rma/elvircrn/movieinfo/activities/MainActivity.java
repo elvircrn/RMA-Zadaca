@@ -8,7 +8,6 @@ import android.view.View;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.ActorAdapter;
-import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 
@@ -26,15 +25,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void populateActors() {
-        RecyclerViewHelpers.initializeRecyclerView(recyclerView, new ActorAdapter(DataProvider.getInstance().getActors()),
-                new ItemClickSupport.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        Intent myIntent = new Intent(MainActivity.this, BiographyActivity.class)
-                                .putExtra("Actor", DataProvider.getInstance().getActors().get(position));
-                        MainActivity.this.startActivity(myIntent);
-                    }
-                }
+        RecyclerViewHelpers.initializeRecyclerView(recyclerView,
+                new ActorAdapter(DataProvider.getInstance().getActors())
         );
     }
 
@@ -50,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
         (findViewById(R.id.directorsButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.this.startActivity(new Intent(MainActivity.this, DirectorListActivity.class));
+                MainActivity.this.startActivity(new Intent(MainActivity.this,
+                        DirectorListActivity.class));
                 finish();
             }
         });
@@ -58,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         (findViewById(R.id.genresButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.this.startActivity(new Intent(MainActivity.this, GenreListActivity.class));
+                MainActivity.this.startActivity(new Intent(MainActivity.this,
+                        GenreListActivity.class));
                 finish();
             }
         });
