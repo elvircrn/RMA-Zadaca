@@ -8,55 +8,64 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 public class Actor implements Serializable {
     public String getGodinaFormatted() {
-        return new StringBuilder().append(String.format(Locale.getDefault(), "%d", godinaRodjenja))
+        return new StringBuilder().append(String.format(Locale.getDefault(), "%d", yearOfBirth))
                 .append(" / ")
-                .append(godinaSmrti == -1 ? "N/A" :
-                        String.format(Locale.getDefault(), "%d", godinaSmrti))
+                .append(yearOfDeath == -1 ? "N/A" :
+                        String.format(Locale.getDefault(), "%d", yearOfDeath))
                 .toString();
     }
 
     public enum Gender {MALE, FEMALE, NONBINARY };
 
-    public Actor(String ime,
-                 String prezime,
-                 String mjestoRodjenja,
-                 int godinaRodjenja,
+    public Actor(String name,
+                 String surname,
+                 String placeOfBirth,
+                 int yearOfBirth,
                  int rating,
-                 int godinaSmrti,
+                 int yearOfDeath,
                  Gender gender,
-                 String biografija,
+                 String biography,
                  String imdbLink) {
-        this.ime = ime;
-        this.prezime = prezime;
-        this.mjestoRodjenja = mjestoRodjenja;
-        this.godinaRodjenja = godinaRodjenja;
+        this.name = name;
+        this.surname = surname;
+        this.placeOfBirth = placeOfBirth;
+        this.yearOfBirth = yearOfBirth;
         this.rating = rating;
-        this.godinaSmrti = godinaSmrti;
+        this.yearOfDeath = yearOfDeath;
         this.gender = gender;
-        this.biografija = biografija;
+        this.biography = biography;
         this.imdbLink = imdbLink;
     }
 
-    private String ime;
-    private String prezime;
-    private String mjestoRodjenja;
-    private int godinaRodjenja;
+    private String name;
+    private String surname;
+    private String placeOfBirth;
+    private int yearOfBirth;
     private int rating;
-    private int godinaSmrti = -1;
+    private int yearOfDeath = -1;
     private Gender gender;
-    private String biografija;
+    private String biography;
     private String imdbLink;
     private String imgUrl;
 
-    public Actor(String ime, String prezime, String mjestoRodjenja, int godinaRodjenja, int rating, int godinaSmrti, Gender gender, String biografija, String imdbLink, String imageUrl) {
-        this.ime = ime;
-        this.prezime = prezime;
-        this.mjestoRodjenja = mjestoRodjenja;
-        this.godinaRodjenja = godinaRodjenja;
+    public Actor(String name,
+                 String surname,
+                 String placeOfBirth,
+                 int yearOfBirth,
+                 int rating,
+                 int yearOfDeath,
+                 Gender gender,
+                 String biography,
+                 String imdbLink,
+                 String imageUrl) {
+        this.name = name;
+        this.surname = surname;
+        this.placeOfBirth = placeOfBirth;
+        this.yearOfBirth = yearOfBirth;
         this.rating = rating;
-        this.godinaSmrti = godinaSmrti;
+        this.yearOfDeath = yearOfDeath;
         this.gender = gender;
-        this.biografija = biografija;
+        this.biography = biography;
         this.imdbLink = imdbLink;
         this.imgUrl = imageUrl;
     }
@@ -74,12 +83,12 @@ public class Actor implements Serializable {
         this.imdbLink = imdbLink;
     }
 
-    public int getGodinaSmrti() {
-        return godinaSmrti;
+    public int getYearOfDeath() {
+        return yearOfDeath;
     }
 
-    public void setGodinaSmrti(int godinaSmrti) {
-        this.godinaSmrti = godinaSmrti;
+    public void setYearOfDeath(int yearOfDeath) {
+        this.yearOfDeath = yearOfDeath;
     }
 
     public Gender getGender() {
@@ -90,47 +99,47 @@ public class Actor implements Serializable {
         this.gender = gender;
     }
 
-    public String getBiografija() {
-        return biografija;
+    public String getBiography() {
+        return biography;
     }
 
-    public void setBiografija(String biografija) {
-        this.biografija = biografija;
+    public void setBiography(String biography) {
+        this.biography = biography;
     }
 
-    public String getIme() {
-        return ime;
+    public String getName() {
+        return name;
     }
 
-    public void setIme(String ime) {
-        this.ime = ime;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getPrezime() {
-        return prezime;
+    public String getSurname() {
+        return surname;
     }
 
-    public void setPrezime(String prezime) {
-        this.prezime = prezime;
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
-    public String getMjestoRodjenja() {
-        return mjestoRodjenja;
+    public String getPlaceOfBirth() {
+        return placeOfBirth;
     }
 
-    public void setMjestoRodjenja(String mjestoRodjenja) {
-        this.mjestoRodjenja = mjestoRodjenja;
+    public void setPlaceOfBirth(String placeOfBirth) {
+        this.placeOfBirth = placeOfBirth;
     }
 
-    public int getGodinaRodjenja() {
-        return godinaRodjenja;
+    public int getYearOfBirth() {
+        return yearOfBirth;
     }
 
-    public void setGodinaRodjenja(int godinaRodjenja) {
-        this.godinaRodjenja = godinaRodjenja;
+    public void setYearOfBirth(int yearOfBirth) {
+        this.yearOfBirth = yearOfBirth;
     }
 
-    public boolean isDead() { return godinaSmrti == -1; }
+    public boolean isDead() { return yearOfDeath == -1; }
 
     public int getRating() {
         return rating;
@@ -141,9 +150,9 @@ public class Actor implements Serializable {
     }
 
     public String getFullName() {
-        return JHelpers.coalesce(new StringBuffer().append(ime)
+        return JHelpers.coalesce(new StringBuffer().append(name)
                                                   .append(" ")
-                                                  .append(prezime).toString(), "");
+                                                  .append(surname).toString(), "");
     }
 
     public String getImageUrl() {

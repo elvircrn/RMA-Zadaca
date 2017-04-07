@@ -46,7 +46,7 @@ public class BiographyActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_SEND);
-                i.putExtra(Intent.EXTRA_TEXT, actor.getBiografija());
+                i.putExtra(Intent.EXTRA_TEXT, actor.getBiography());
                 i.setType("text/plain");
 
                 // Provjera da li uopste postoji app koji podrzava ovu vrstu intenta. resolveActivity()
