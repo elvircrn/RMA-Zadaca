@@ -1,6 +1,5 @@
 /*
     TODO: Pass parcelable arrays
-    TODO: Fix fragment replacing
     TODO: Translate
  */
 
@@ -34,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
      */
     enum LayoutMode { NARROW, WIDE }
 
+    private Actor selectedActor;
+
     public LayoutMode getCurrentLayout() {
         return currentLayout;
     }
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         detectLayoutMode();
@@ -84,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                             R.id.frame2,
                             BiographyFragment.getTypeFragmentTag(),
                             true, BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
-
                 }
             }
         });
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void displayBiography(Actor actor) {
+        this.selectedActor = actor;
         BiographyFragment biographyFragment = getBiographyFragment();
 
         if (biographyFragment != null) {
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             this.setFragment(BiographyFragment.class,
                     getCurrentLayout() == LayoutMode.NARROW ? R.id.frame1 : R.id.frame2,
                     BiographyFragment.getTypeFragmentTag(),
-                    false, BiographyFragment.getActorParamTag(), actor);
+                    true, BiographyFragment.getActorParamTag(), actor);
         }
     }
 
@@ -204,9 +206,9 @@ public class MainActivity extends AppCompatActivity {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } /*else {
+        } else {
             fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }*/
+        }
     }
 
     public BiographyFragment getBiographyFragment() {

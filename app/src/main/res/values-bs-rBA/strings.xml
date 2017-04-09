@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Movie Info</string>
+    <string name="actors">Glumci</string>
+    <string name="genres">Zanrovi</string>
+    <string name="directors">Reziseri</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="other">Ostalo</string>
+    <string name="flag">flag_ba</string>
+</resources>

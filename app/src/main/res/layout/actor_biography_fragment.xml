@@ -59,7 +59,7 @@
             android:id="@+id/spolTextView"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
-            android:text='@{String.valueOf(actor.gender.MALE)}'
+            android:text='@{String.valueOf(actor.gender)}'
             app:layout_constraintLeft_toRightOf="@+id/imageView"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
