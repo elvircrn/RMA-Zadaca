@@ -65,6 +65,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
     public void onButtonPressed(Uri uri) {
     }
 
+    // TODO: Inject ActorAdapter
     protected void populateActors() {
         RecyclerViewHelpers.initializeRecyclerView(recyclerView, new ActorAdapter(DataProvider.getInstance().getActors()),
                 new ItemClickSupport.OnItemClickListener() {
@@ -76,5 +77,10 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     }
                 }
         );
+
+        recyclerView.setItemViewCacheSize(30);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+        recyclerView.setHasFixedSize(true);
     }
 }

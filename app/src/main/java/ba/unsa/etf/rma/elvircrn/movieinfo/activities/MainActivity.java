@@ -1,9 +1,10 @@
+package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
+
 /*
     TODO: Pass parcelable arrays
     TODO: Translate
  */
 
-package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
 import android.os.Parcelable;
 import android.provider.ContactsContract;

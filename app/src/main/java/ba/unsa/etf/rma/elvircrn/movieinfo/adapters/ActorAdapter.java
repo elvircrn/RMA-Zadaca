@@ -14,31 +14,22 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorListItemBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
 public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> {
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ActorListItemBinding binding;
         public ViewHolder(ActorListItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            itemView.setOnClickListener(this);
         }
 
         public void bind(Actor actor) {
             binding.setActor(actor);
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (binding != null) {
-                Intent myIntent = new Intent(v.getContext(), BiographyFragment.class)
-                        .putExtra("Actor", binding.getActor());
-                v.getContext().startActivity(myIntent);
-            }
         }
     }
 
     private ArrayList<Actor> actors;
     public ActorAdapter(ArrayList<Actor> actors) {
         this.actors = actors;
+        setHasStableIds(true);
     }
 
     @Override

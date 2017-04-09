@@ -68,12 +68,14 @@
             android:layout_row="3"
             android:layout_toEndOf="@+id/icon"
             android:layout_weight="1"
-            android:text='@{String.valueOf(actor.yearOfBirth) + (actor.yearOfDeath &lt; 0 ? "" : " - " + String.valueOf(actor.yearOfDeath))}'
+            android:text="YEAR"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/mjestoTextView"
             app:layout_constraintTop_toBottomOf="@+id/nameTextView"
             app:layout_constraintVertical_bias="0.666" />
+    <!-- android:text='@{String.valueOf(actor.yearOfBirth) + (actor.yearOfDeath &lt; 0 ? "" : " - " + String.valueOf(actor.yearOfDeath))}' -->
+
 
         <TextView
             android:id="@+id/mjestoTextView"
