@@ -13,4 +13,16 @@ public class RecyclerViewHelpers {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.getAdapter().notifyDataSetChanged();
     }
+
+    public static <U extends RecyclerView.ViewHolder, T extends RecyclerView.Adapter<U>>
+    void initializeRecyclerView(RecyclerView recyclerView, T adapter, ItemClickSupport.OnItemClickListener listener) {
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.getAdapter().notifyDataSetChanged();
+
+        if (listener != null) {
+            ItemClickSupport.addTo(recyclerView).setOnItemClickListener(listener);
+        }
+    }
+
 }

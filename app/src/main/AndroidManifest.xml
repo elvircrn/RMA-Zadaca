@@ -18,9 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.BiographyActivity" />
-        <activity android:name=".activities.DirectorListActivity" />
-        <activity android:name=".activities.GenreListActivity"></activity>
+        <activity android:name=".fragments.BiographyFragment" />
+        <activity android:name=".fragments.DirectorListFragment" />
+        <activity android:name=".fragments.GenreListFragment"></activity>
     </application>
 
 </manifest>

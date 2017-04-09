@@ -9,9 +9,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
-import ba.unsa.etf.rma.elvircrn.movieinfo.activities.BiographyActivity;
-import ba.unsa.etf.rma.elvircrn.movieinfo.activities.MainActivity;
+import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorListItemBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
@@ -31,7 +29,7 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> 
         @Override
         public void onClick(View v) {
             if (binding != null) {
-                Intent myIntent = new Intent(v.getContext(), BiographyActivity.class)
+                Intent myIntent = new Intent(v.getContext(), BiographyFragment.class)
                         .putExtra("Actor", binding.getActor());
                 v.getContext().startActivity(myIntent);
             }

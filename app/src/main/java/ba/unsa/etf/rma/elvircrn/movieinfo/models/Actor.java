@@ -1,12 +1,15 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
-public class Actor implements Serializable {
+public class Actor implements Parcelable {
     public String getGodinaFormatted() {
         return new StringBuilder().append(String.format(Locale.getDefault(), "%d", yearOfBirth))
                 .append(" / ")
@@ -160,4 +163,49 @@ public class Actor implements Serializable {
     }
 
     public Gender getGenderColor() { return gender; }
+
+    // Parcelable
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.name);
+        dest.writeString(this.surname);
+        dest.writeString(this.placeOfBirth);
+        dest.writeInt(this.yearOfBirth);
+        dest.writeInt(this.rating);
+        dest.writeInt(this.yearOfDeath);
+        dest.writeInt(this.gender == null ? -1 : this.gender.ordinal());
+        dest.writeString(this.biography);
+        dest.writeString(this.imdbLink);
+        dest.writeString(this.imgUrl);
+    }
+
+    protected Actor(Parcel in) {
+        this.name = in.readString();
+        this.surname = in.readString();
+        this.placeOfBirth = in.readString();
+        this.yearOfBirth = in.readInt();
+        this.rating = in.readInt();
+        this.yearOfDeath = in.readInt();
+        int tmpGender = in.readInt();
+        this.gender = tmpGender == -1 ? null : Gender.values()[tmpGender];
+        this.biography = in.readString();
+        this.imdbLink = in.readString();
+        this.imgUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<Actor> CREATOR = new Parcelable.Creator<Actor>() {
+        public Actor createFromParcel(Parcel source) {
+            return new Actor(source);
+        }
+
+        public Actor[] newArray(int size) {
+            return new Actor[size];
+        }
+    };
 }
