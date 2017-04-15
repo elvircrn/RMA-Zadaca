@@ -1,20 +1,13 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
-/*
-    TODO: Pass parcelable arrays
-    TODO: Translate
- */
-
 
 import android.os.Parcelable;
-import android.provider.ContactsContract;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 
@@ -22,17 +15,20 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ActorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
+import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ButtonsFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
-import ba.unsa.etf.rma.elvircrn.movieinfo.listeners.IFragmentChangeListener;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener {
     /**
      * NARROW - width < 500dp
      * WIDE   - otherwise
      */
-    enum LayoutMode { NARROW, WIDE }
+    enum LayoutMode {
+        NARROW, WIDE
+    }
+
 
     private Actor selectedActor;
 
@@ -50,14 +46,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState == null) {
+            DataProvider.getInstance().seed();
+        }
+
         setContentView(R.layout.activity_main);
 
         detectLayoutMode();
 
-
-        DataProvider.getInstance().seed();
+        initFragments(savedInstanceState != null);
         setButtonOnClickListeners();
-        initFragments();
     }
 
     @Override
@@ -79,14 +77,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof MainActivity) {
-                    ((MainActivity) v.getContext()).setFragment(ActorListFragment.class,
+                    ((MainActivity) v.getContext()).setSingleFragment(ActorListFragment.class,
                             R.id.frame1,
                             ActorListFragment.getTypeFragmentTag(),
-                            true, null, null);
-                    ((MainActivity) v.getContext()).setFragment(BiographyFragment.class,
+                            true, ActorListFragment.getTypeFragmentTag(), null, null);
+                    ((MainActivity) v.getContext()).setSingleFragment(BiographyFragment.class,
                             R.id.frame2,
                             BiographyFragment.getTypeFragmentTag(),
-                            true, BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
+                            true, ActorListFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
                 }
             }
         });
@@ -96,14 +94,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof MainActivity) {
-                    ((MainActivity) v.getContext()).setFragment(DirectorListFragment.class,
+                    ((MainActivity) v.getContext()).setSingleFragment(DirectorListFragment.class,
                             R.id.frame1,
                             DirectorListFragment.getTypeFragmentTag(),
-                            true, null, null);
-                    ((MainActivity) v.getContext()).setFragment(GenreListFragment.class,
+                            true, DirectorListFragment.getTypeFragmentTag(), null, null);
+                    ((MainActivity) v.getContext()).setSingleFragment(GenreListFragment.class,
                             R.id.frame2,
                             GenreListFragment.getTypeFragmentTag(),
-                            true, null, null);
+                            true, DirectorListFragment.getTypeFragmentTag(), null, null);
                 }
             }
         });
@@ -115,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof MainActivity) {
-                    ((MainActivity) v.getContext()).setFragment(DirectorListFragment.class,
+                    ((MainActivity) v.getContext()).setSingleFragment(DirectorListFragment.class,
                             R.id.frame1,
                             DirectorListFragment.getTypeFragmentTag(),
-                            true, null, null);
+                            true, DirectorListFragment.getTypeFragmentTag(), null, null);
                 }
             }
         });
@@ -129,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof MainActivity) {
-                    ((MainActivity) v.getContext()).setFragment(GenreListFragment.class,
+                    ((MainActivity) v.getContext()).setSingleFragment(GenreListFragment.class,
                             R.id.frame1,
                             GenreListFragment.getTypeFragmentTag(),
-                            true, null, null);
+                            true, GenreListFragment.getTypeFragmentTag(), null, null);
                 }
             }
         });
@@ -142,24 +140,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof MainActivity) {
-                    ((MainActivity) v.getContext()).setFragment(ActorListFragment.class,
+                    ((MainActivity) v.getContext()).setSingleFragment(ActorListFragment.class,
                             R.id.frame1,
                             ActorListFragment.getTypeFragmentTag(),
-                            true, null, null);
+                            true, ActorListFragment.getTypeFragmentTag(), null, null);
                 }
             }
         });
     }
 
-    protected void initFragments()  {
-        this.setFragment(ActorListFragment.class,
-                R.id.frame1, ActorListFragment.getTypeFragmentTag(),
-                false, null, null);
+    protected void initFragments(boolean isSaved) {
+        if (!isSaved) {
+            this.setSingleFragment(ActorListFragment.class,
+                    R.id.frame1, ActorListFragment.getTypeFragmentTag(),
+                    false, null, null, null);
+        }
 
         if (getCurrentLayout() == LayoutMode.WIDE) {
-            this.setFragment(BiographyFragment.class,
+            this.setSingleFragment(BiographyFragment.class,
                     R.id.frame2, BiographyFragment.getTypeFragmentTag(),
-                    false, BiographyFragment.getActorParamTag(),
+                    false, null, BiographyFragment.getActorParamTag(),
                     DataProvider.getInstance().getActors().get(0));
         }
     }
@@ -168,27 +168,29 @@ public class MainActivity extends AppCompatActivity {
         this.selectedActor = actor;
         BiographyFragment biographyFragment = getBiographyFragment();
 
-        if (biographyFragment != null) {
+        if (biographyFragment != null && biographyFragment.isVisible()) {
             biographyFragment.setActor(actor);
-        } else {
-            this.setFragment(BiographyFragment.class,
-                    getCurrentLayout() == LayoutMode.NARROW ? R.id.frame1 : R.id.frame2,
-                    BiographyFragment.getTypeFragmentTag(),
-                    true, BiographyFragment.getActorParamTag(), actor);
         }
+        this.setSingleFragment(BiographyFragment.class,
+                getCurrentLayout() == LayoutMode.NARROW ? R.id.frame1 : R.id.frame2,
+                BiographyFragment.getTypeFragmentTag(),
+                true, BiographyFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), actor);
     }
 
     /**
      * Genericka metoda koja pojednostavlja proces postavljanja fragmenata.
      */
     @SuppressWarnings({"unchecked", "TryWithIdenticalCatches"})
-    private <TFragment extends Fragment> void setFragment(Class<TFragment> FragmentType,
-                                                          @IdRes int frame, String fragmentTag,
-                                                          boolean addToBackStack,
-                                                          @Nullable String parcelTag,
-                                                          @Nullable Parcelable parcel) {
+    private <TFragment extends Fragment> void setSingleFragment(Class<TFragment> FragmentType,
+                                                                @IdRes int frame,
+                                                                String fragmentTag,
+                                                                boolean addToBackStack,
+                                                                @Nullable String backStackTag,
+                                                                @Nullable String parcelTag,
+                                                                @Nullable Parcelable parcel) {
         FragmentManager fm = getSupportFragmentManager();
         TFragment fragment = (TFragment) fm.findFragmentByTag(fragmentTag);
+
         if (fragment == null) {
             try {
                 fragment = FragmentType.newInstance();
@@ -197,27 +199,64 @@ public class MainActivity extends AppCompatActivity {
                     args.putParcelable(parcelTag, parcel);
                     fragment.setArguments(args);
                 }
-                if (addToBackStack)
-                    fm.beginTransaction().replace(frame, fragment, fragmentTag)
-                            .addToBackStack(fragmentTag).commit();
-                else
-                    fm.beginTransaction().replace(frame, fragment, fragmentTag).commit();
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else {
-            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
+
+
+        if (addToBackStack)
+            fm.beginTransaction().replace(frame, fragment, fragmentTag)
+                    .addToBackStack(backStackTag)
+                    .commit();
+        else
+            fm.beginTransaction().replace(frame, fragment, fragmentTag)
+                    .commit();
     }
 
     public BiographyFragment getBiographyFragment() {
         Fragment biographyFragment = getSupportFragmentManager()
                 .findFragmentByTag(BiographyFragment.getTypeFragmentTag());
         if (biographyFragment != null)
-            return (BiographyFragment)biographyFragment;
+            return (BiographyFragment) biographyFragment;
         else
             return null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (getCurrentLayout() == LayoutMode.WIDE)
+            super.onBackPressed();
+    }
+
+    @Override
+    public void onFragmentInteraction(View v) {
+        if (getCurrentLayout() == LayoutMode.WIDE) {
+            if (v.getId() == R.id.actorsButton) {
+                setSingleFragment(ActorListFragment.class,
+                        R.id.frame1,
+                        ActorListFragment.getTypeFragmentTag(),
+                        true, ActorListFragment.getTypeFragmentTag(), null, null);
+
+                setSingleFragment(BiographyFragment.class,
+                        R.id.frame2,
+                        BiographyFragment.getTypeFragmentTag(),
+                        true, ActorListFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
+
+            } else if (v.getId() == R.id.othersButton) {
+
+            }
+        } else if (getCurrentLayout() == LayoutMode.NARROW) {
+            if (v.getId() == R.id.actorsButton) {
+
+            } else if (v.getId() == R.id.genresButton) {
+
+            } else if (v.getId() == R.id.directorsButton) {
+
+            }
+        }
     }
 }

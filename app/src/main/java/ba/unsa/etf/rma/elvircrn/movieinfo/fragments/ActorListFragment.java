@@ -83,4 +83,5 @@ public class ActorListFragment extends Fragment implements ITaggable {
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setHasFixedSize(true);
     }
+
 }

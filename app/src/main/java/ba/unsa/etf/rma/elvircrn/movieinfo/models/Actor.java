@@ -18,7 +18,15 @@ public class Actor implements Parcelable {
                 .toString();
     }
 
-    public enum Gender {MALE, FEMALE, NONBINARY };
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public enum Gender { MALE, FEMALE, NONBINARY };
 
     public Actor(String name,
                  String surname,
@@ -50,6 +58,7 @@ public class Actor implements Parcelable {
     private String biography;
     private String imdbLink;
     private String imgUrl;
+    private int  id;
 
     public Actor(String name,
                  String surname,

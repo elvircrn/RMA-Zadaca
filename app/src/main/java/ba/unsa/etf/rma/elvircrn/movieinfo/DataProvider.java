@@ -46,10 +46,15 @@ public class DataProvider {
 
     public void seed() {
         clear();
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 200; i++)
             seedActors();
         seedDirectors();
         seedGenres();
+
+        int id = 0;
+        for (Actor actor : actors) {
+            actor.setId(id++);
+        }
     }
 
     void seedGenres() {

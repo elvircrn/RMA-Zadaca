@@ -51,4 +51,9 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> 
     public int getItemCount() {
         return actors.size();
     }
+
+    @Override
+    public long getItemId(int position) {
+        return actors.get(position).getId();
+    }
 }
