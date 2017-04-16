@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             if (!fragment.isVisible()) {
                 fm.beginTransaction().remove(fragment).commit();
                 fm.executePendingTransactions();
-            }   
+            }
         }
 
         if (parcelTag != null && parcel != null) {
