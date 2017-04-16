@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 
 
+import java.util.Locale;
+
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ActorListFragment;
@@ -50,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         if (savedInstanceState == null) {
             DataProvider.getInstance().seed();
         }
+
+        String currentLanguage = Locale.getDefault().getDisplayLanguage();
+        DataProvider.getInstance().setLocale(currentLanguage);
 
         setContentView(R.layout.activity_main);
         detectLayoutMode();
@@ -155,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
     @Override
     public void onFragmentInteraction(View v) {
+        getSupportFragmentManager().popBackStack();
         if (getCurrentLayout() == LayoutMode.WIDE) {
             if (v.getId() == R.id.actorsButton) {
                 setSingleFragment(ActorListFragment.class,

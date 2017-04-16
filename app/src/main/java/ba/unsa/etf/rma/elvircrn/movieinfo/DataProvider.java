@@ -2,6 +2,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo;
 
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
@@ -57,11 +58,15 @@ public class DataProvider {
         }
     }
 
+    public void setLocale(String locale) {
+        Genre.setLocale(locale);
+    }
+
     void seedGenres() {
-        genres.add(new Genre("Horror", "horror"));
-        genres.add(new Genre("Comedy", "comedy"));
-        genres.add(new Genre("Drama", "drama"));
-        genres.add(new Genre("SciFi", "scifi"));
+        genres.add(new Genre("Horror", "horror").addTranslation("hrvatski", "Horor").addTranslation("bosanski", "Horor"));
+        genres.add(new Genre("Comedy", "comedy").addTranslation("hrvatski", "Komedija").addTranslation("bosanski", "Komedija"));
+        genres.add(new Genre("Drama", "drama").addTranslation("hrvatski", "Drama").addTranslation("bosanski", "Drama"));
+        genres.add(new Genre("SciFi", "scifi").addTranslation("hrvatski", "SciFi").addTranslation("bosanski", "Scifi"));
     }
 
     void seedDirectors() {
