@@ -70,10 +70,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
     protected void initFragments(boolean isSaved) {
         FragmentManager fm = getSupportFragmentManager();
-        if (isSaved) {
-            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            fm.executePendingTransactions();
-        }
+
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fm.executePendingTransactions();
 
 
         if (getCurrentLayout() == LayoutMode.WIDE) {
@@ -123,7 +122,11 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        }
+        } /*else {
+            if (fragment.getId)
+            fm.beginTransaction().remove(fragment).commit();
+            fm.executePendingTransactions();
+        }*/
 
         if (parcelTag != null && parcel != null) {
             Bundle args = new Bundle();
@@ -139,9 +142,10 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             fm.beginTransaction().replace(frame, fragment, fragmentTag)
                     .addToBackStack(backStackTag)
                     .commit();
-        else
+        else {
             fm.beginTransaction().replace(frame, fragment, fragmentTag)
                     .commit();
+        }
     }
 
     public BiographyFragment getBiographyFragment() {
@@ -160,7 +164,9 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
     @Override
     public void onFragmentInteraction(View v) {
-        getSupportFragmentManager().popBackStack();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fm.executePendingTransactions();
         if (getCurrentLayout() == LayoutMode.WIDE) {
             if (v.getId() == R.id.actorsButton) {
                 setSingleFragment(ActorListFragment.class,
