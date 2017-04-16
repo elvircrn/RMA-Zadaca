@@ -17,19 +17,28 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.listeners.IFragmentChangeListener;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
     RecyclerView recyclerView;
-    public ActorListFragment() { }
+    ActorAdapter actorAdapter;
+    ItemClickSupport.OnItemClickListener mListener;
+
+    public ActorListFragment() {
+    }
 
     private final static String FRAGMENT_TAG = "actorListFragment";
 
     @Override
-    public String getFragmentTag() { return FRAGMENT_TAG; }
+    public String getFragmentTag() {
+        return FRAGMENT_TAG;
+    }
 
     /* TODO: Refactor when android studio 2.4 lands */
-    public static String getTypeFragmentTag() { return FRAGMENT_TAG; }
+    public static String getTypeFragmentTag() {
+        return FRAGMENT_TAG;
+    }
 
 
     @Override
@@ -41,17 +50,20 @@ public class ActorListFragment extends Fragment implements ITaggable {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerView = (RecyclerView)getView().findViewById(R.id.actorsList);
-        populateActors();
+        recyclerView = (RecyclerView) getView().findViewById(R.id.actorsList);
+        if (recyclerView != null) {
+            populateActors();
+        }
     }
 
     @Override
-    public String toString() { return FRAGMENT_TAG; }
+    public String toString() {
+        return FRAGMENT_TAG;
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        recyclerView.getAdapter().notifyDataSetChanged();
     }
 
     @Override
@@ -67,21 +79,30 @@ public class ActorListFragment extends Fragment implements ITaggable {
 
     // TODO: Inject ActorAdapter
     protected void populateActors() {
-        RecyclerViewHelpers.initializeRecyclerView(recyclerView, new ActorAdapter(DataProvider.getInstance().getActors()),
-                new ItemClickSupport.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                        if (getActivity() instanceof MainActivity) {
-                            ((MainActivity)getActivity()).displayBiography(DataProvider.getInstance().getActors().get(position));
-                        }
+        if (mListener == null) {
+            mListener = new ItemClickSupport.OnItemClickListener() {
+                @Override
+                public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                    if (getActivity() instanceof MainActivity) {
+                        Actor actor = DataProvider.getInstance().getActors().get(position);
+                        ((MainActivity) getActivity()).displayBiography(actor);
                     }
                 }
-        );
+            };
+        }
 
-        recyclerView.setItemViewCacheSize(30);
+        if (actorAdapter == null) {
+            actorAdapter = new ActorAdapter(DataProvider.getInstance().getActors());
+        }
+
+        RecyclerViewHelpers.initializeRecyclerView(recyclerView,
+                actorAdapter,
+                mListener);
+
+        recyclerView.getAdapter().notifyDataSetChanged();
+        recyclerView.setItemViewCacheSize(50);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setHasFixedSize(true);
     }
-
 }

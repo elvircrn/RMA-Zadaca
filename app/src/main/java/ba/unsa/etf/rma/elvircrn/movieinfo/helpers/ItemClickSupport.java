@@ -22,6 +22,7 @@ public class ItemClickSupport {
         public void onClick(View v) {
             if (mOnItemClickListener != null) {
                 RecyclerView.ViewHolder holder = mRecyclerView.getChildViewHolder(v);
+
                 mOnItemClickListener.onItemClicked(mRecyclerView, holder.getAdapterPosition(), v);
             }
         }

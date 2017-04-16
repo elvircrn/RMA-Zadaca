@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFancyFragmentBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.listeners.IFragmentChangeListener;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
@@ -22,6 +23,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBind
 public class BiographyFragment extends Fragment implements ITaggable {
     Actor actor;
     private ActorBiographyFragmentBinding binding;
+
 
     private final static String ACTOR_PARAM_TAG = "Actor";
     public static String getActorParamTag() { return ACTOR_PARAM_TAG; }
@@ -36,9 +38,9 @@ public class BiographyFragment extends Fragment implements ITaggable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         if (getArguments().containsKey(getActorParamTag()))
             actor = (Actor)getArguments().get(getActorParamTag());
+
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
         View view = binding.getRoot();
         binding.setActor(actor);
@@ -49,9 +51,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         addOnButtonClickListeners();
-        ((TextView)getView().findViewById(R.id.bioTextView)).setMovementMethod(new ScrollingMovementMethod());
     }
 
     void addOnButtonClickListeners() {

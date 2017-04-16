@@ -17,101 +17,100 @@
         tools:layout_editor_absoluteY="296dp">
 
 
-<android.support.constraint.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:weightSum="1"
-    android:background="?android:attr/selectableItemBackground">
-
-
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="89dp"
-            android:layout_height="85dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="148dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="fitXY"
-            app:imageUrl='@{actor.imageUrl}'
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
-
-        <TextView
-            android:id="@+id/nameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/icon"
-            android:layout_column="1"
-            android:layout_row="1"
-            android:layout_toEndOf="@+id/icon"
-            android:layout_weight="1"
-            android:text='@{actor.fullName}'
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintLeft_toLeftOf="@+id/godineText"
-            app:layout_constraintTop_toTopOf="@+id/icon" />
-
-        <!--Ako je actor umro, godineText ce imati format xxxx - yyyy,
-    a u slucaju da je jos uvijek ziv, samo xxxx. &lt; oznacava lessThan simbol. -->
-        <TextView
-            android:id="@+id/godineText"
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/icon"
-            android:layout_column="1"
-            android:layout_marginBottom="34dp"
-            android:layout_marginTop="8dp"
-            android:layout_row="3"
-            android:layout_toEndOf="@+id/icon"
-            android:layout_weight="1"
-            android:text="YEAR"
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="@+id/mjestoTextView"
-            app:layout_constraintTop_toBottomOf="@+id/nameTextView"
-            app:layout_constraintVertical_bias="0.666" />
-    <!-- android:text='@{String.valueOf(actor.yearOfBirth) + (actor.yearOfDeath &lt; 0 ? "" : " - " + String.valueOf(actor.yearOfDeath))}' -->
+            android:weightSum="1"
+            android:background="?android:attr/selectableItemBackground">
 
 
-        <TextView
-            android:id="@+id/mjestoTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/icon"
-            android:layout_column="1"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_row="2"
-            android:layout_toEndOf="@+id/icon"
-            android:layout_weight="1"
-            android:text='@{actor.placeOfBirth}'
-            android:textSize="15sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/icon" />
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="89dp"
+                android:layout_height="85dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="148dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="fitXY"
+                app:imageUrl='@{actor.imageUrl}'
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
 
-        <TextView
-            android:id="@+id/ratingTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="15dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
-            android:text='@{String.valueOf(actor.rating)}'
-            app:layout_constraintHorizontal_bias="0.896"
-            app:layout_constraintLeft_toRightOf="@+id/mjestoTextView"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/icon"
+                android:layout_column="1"
+                android:layout_row="1"
+                android:layout_toEndOf="@+id/icon"
+                android:layout_weight="1"
+                android:text='@{actor.fullName}'
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="@+id/godineText"
+                app:layout_constraintTop_toTopOf="@+id/icon" />
+
+            <!--Ako je actor umro, godineText ce imati format xxxx - yyyy,
+        a u slucaju da je jos uvijek ziv, samo xxxx. &lt; oznacava lessThan simbol. -->
+            <TextView
+                android:id="@+id/godineText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/icon"
+                android:layout_column="1"
+                android:layout_marginBottom="34dp"
+                android:layout_marginTop="8dp"
+                android:layout_row="3"
+                android:layout_toEndOf="@+id/icon"
+                android:layout_weight="1"
+                android:text='@{String.valueOf(actor.yearOfBirth) + (actor.yearOfDeath &lt; 0 ? "" : " - " + String.valueOf(actor.yearOfDeath))}'
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/mjestoTextView"
+                app:layout_constraintTop_toBottomOf="@+id/nameTextView"
+                app:layout_constraintVertical_bias="0.666" />
+
+
+            <TextView
+                android:id="@+id/mjestoTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/icon"
+                android:layout_column="1"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_row="2"
+                android:layout_toEndOf="@+id/icon"
+                android:layout_weight="1"
+                android:text='@{actor.placeOfBirth}'
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@+id/icon" />
+
+            <TextView
+                android:id="@+id/ratingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:text="@{Integer.toString(actor.rating)}"
+                app:layout_constraintHorizontal_bias="0.896"
+                app:layout_constraintLeft_toRightOf="@+id/mjestoTextView"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="8dp" />
 
 
 
-</android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
 </layout>

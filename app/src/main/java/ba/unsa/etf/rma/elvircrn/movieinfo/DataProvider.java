@@ -46,8 +46,8 @@ public class DataProvider {
 
     public void seed() {
         clear();
-        for (int i = 0; i < 200; i++)
-            seedActors();
+
+        seedActors();
         seedDirectors();
         seedGenres();
 

@@ -74,17 +74,4 @@ public class ButtonsFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(View v);
     }
-
-
-    protected void setButtonOnClickListeners() {
-        View.OnClickListener clickListener = new View.OnClickListener() {
-            @SuppressWarnings("TryWithIdenticalCatches")
-            @Override
-            public void onClick(View v) {
-                mListener.onFragmentInteraction(v);
-            }
-        };
-
-
-    }
 }
