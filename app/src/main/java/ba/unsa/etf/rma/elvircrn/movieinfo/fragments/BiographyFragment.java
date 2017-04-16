@@ -1,7 +1,9 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.StrictMode;
 import android.support.v4.app.Fragment;
@@ -24,10 +26,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
     Actor actor;
     private ActorBiographyFragmentBinding binding;
 
-
     private final static String ACTOR_PARAM_TAG = "Actor";
     public static String getActorParamTag() { return ACTOR_PARAM_TAG; }
-
 
     public static final String FRAGMENT_TAG = "biographyTag";
 
@@ -44,7 +44,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
         View view = binding.getRoot();
         binding.setActor(actor);
-
         return view;
     }
 
@@ -94,4 +93,5 @@ public class BiographyFragment extends Fragment implements ITaggable {
         this.actor = actor;
         binding.setActor(actor);
     }
+
 }

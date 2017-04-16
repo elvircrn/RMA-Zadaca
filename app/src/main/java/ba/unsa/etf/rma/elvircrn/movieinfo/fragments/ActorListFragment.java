@@ -83,9 +83,10 @@ public class ActorListFragment extends Fragment implements ITaggable {
             mListener = new ItemClickSupport.OnItemClickListener() {
                 @Override
                 public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                    if (getActivity() instanceof MainActivity) {
+                    if (getActivity() instanceof OnFragmentInteractionListener) {
                         Actor actor = DataProvider.getInstance().getActors().get(position);
-                        ((MainActivity) getActivity()).displayBiography(actor);
+                        OnFragmentInteractionListener mainActivity = (OnFragmentInteractionListener)getActivity();
+                        mainActivity.onFragmentInteraction(actor);
                     }
                 }
             };
@@ -104,5 +105,9 @@ public class ActorListFragment extends Fragment implements ITaggable {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setHasFixedSize(true);
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Actor actor);
     }
 }

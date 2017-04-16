@@ -20,12 +20,12 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
-public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
     /**
      * NARROW - width < 500dp
      * WIDE   - otherwise
      */
-    enum LayoutMode {
+    public enum LayoutMode {
         NARROW,
         WIDE
     }
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
         setContentView(R.layout.activity_main);
         detectLayoutMode();
+
         initFragments(savedInstanceState != null);
     }
 
@@ -63,11 +64,12 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     }
 
     protected void initFragments(boolean isSaved) {
-        if (!isSaved) {
-            this.setSingleFragment(ActorListFragment.class,
-                    R.id.frame1, ActorListFragment.getTypeFragmentTag(),
-                    false, null, null, null);
+        FragmentManager fm = getSupportFragmentManager();
+        if (isSaved) {
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fm.executePendingTransactions();
         }
+
 
         if (getCurrentLayout() == LayoutMode.WIDE) {
             this.setSingleFragment(BiographyFragment.class,
@@ -75,6 +77,11 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                     false, null, BiographyFragment.getActorParamTag(),
                     DataProvider.getInstance().getActors().get(0));
         }
+
+        this.setSingleFragment(ActorListFragment.class,
+                R.id.frame1, ActorListFragment.getTypeFragmentTag(),
+                false, null, null, null);
+
     }
 
     public void displayBiography(Actor actor) {
@@ -87,13 +94,11 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             this.setSingleFragment(BiographyFragment.class,
                     getCurrentLayout() == LayoutMode.NARROW ? R.id.frame1 : R.id.frame2,
                     BiographyFragment.getTypeFragmentTag(),
-                    true, BiographyFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), actor);
+                    getCurrentLayout() == LayoutMode.NARROW, BiographyFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), actor);
+
         }
     }
 
-    /**
-     * Steta sto java nema defaultne parametara. :'(
-     */
     @SuppressWarnings({"unchecked", "TryWithIdenticalCatches"})
     private <TFragment extends Fragment> void setSingleFragment(Class<TFragment> FragmentType,
                                                                 @IdRes int frame,
@@ -135,19 +140,17 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     }
 
     public BiographyFragment getBiographyFragment() {
-        Fragment biographyFragment = getSupportFragmentManager()
+        Fragment fragment = getSupportFragmentManager()
                 .findFragmentByTag(BiographyFragment.getTypeFragmentTag());
-        if (biographyFragment != null)
-            return (BiographyFragment) biographyFragment;
+        if (fragment != null)
+            return (BiographyFragment) fragment;
         else
             return null;
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (getCurrentLayout() == LayoutMode.WIDE)
-            super.onBackPressed();
+    public void onFragmentInteraction(Actor actor) {
+        displayBiography(actor);
     }
 
     @Override
