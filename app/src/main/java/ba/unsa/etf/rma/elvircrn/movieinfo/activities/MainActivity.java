@@ -122,11 +122,12 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } /*else {
-            if (fragment.getId)
-            fm.beginTransaction().remove(fragment).commit();
-            fm.executePendingTransactions();
-        }*/
+        } else {
+            if (!fragment.isVisible()) {
+                fm.beginTransaction().remove(fragment).commit();
+                fm.executePendingTransactions();
+            }   
+        }
 
         if (parcelTag != null && parcel != null) {
             Bundle args = new Bundle();
