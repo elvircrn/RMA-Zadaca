@@ -16,13 +16,6 @@ Sve stavke implementirane.
 ## Zadatak 3
 Sve stavke implementirane.
 
-
-## Zadatak 1
-Sve stavke implementirane.
-
-## Zadatak 2
-Sve stavke implementirane.
-
 # Spirala 1
 
 ## Zadatak 1
