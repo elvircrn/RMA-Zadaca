@@ -5,15 +5,26 @@
     tools:context="ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ActorListFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/actorsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:weightSum="20">
+
+        <SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="18" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/actorsList"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
 
 
 </FrameLayout>

@@ -26,7 +26,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
     Actor actor;
     private ActorBiographyFragmentBinding binding;
 
-    private final static String ACTOR_PARAM_TAG = "Actor";
+    private final static String ACTOR_PARAM_TAG = "ActorDTO";
     public static String getActorParamTag() { return ACTOR_PARAM_TAG; }
 
     public static final String FRAGMENT_TAG = "biographyTag";

@@ -29,12 +29,6 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    // compile 'com.github.bumptech.glide:glide:3.7.0'
-
-
-
-
-
 
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
@@ -42,6 +36,23 @@ dependencies {
     compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
+
+    // Library koji je gotovo identican picasso
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+
+    // JSON Converter
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // Google-ov library za mapiranej json objekata direktno u java klase
+    compile 'com.google.code.gson:gson:2.6.2'
+
+    // Pravo dobar library za Http requestove. Nista prekomplikovano da bi se smatralo varanjem :P
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'
+
+    // Odlucio sam da iskoristim ovu zadacu kao priliku da se u uvedem u rxjava.
+    compile 'io.reactivex:rxandroid:1.2.0'
+    compile 'io.reactivex:rxjava:1.1.4'
 
     testCompile 'junit:junit:4.12'
 }

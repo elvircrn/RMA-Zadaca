@@ -28,6 +28,8 @@ public class Actor implements Parcelable {
 
     public enum Gender { MALE, FEMALE, NONBINARY };
 
+    public Actor() { }
+
     public Actor(String name,
                  String surname,
                  String placeOfBirth,

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.view.View;
 
 
@@ -32,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         WIDE
     }
 
-
     private Actor selectedActor;
+
 
     public LayoutMode getCurrentLayout() {
         return currentLayout;
@@ -60,6 +61,10 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         detectLayoutMode();
 
         initFragments(savedInstanceState != null);
+        initSearch();
+    }
+
+    protected void initSearch() {
     }
 
     @Override

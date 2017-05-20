@@ -30,8 +30,12 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> 
 
     private ArrayList<Actor> actors;
     public ActorAdapter(ArrayList<Actor> actors) {
-        this.actors = actors;
+        setActors(actors);
         setHasStableIds(true);
+    }
+
+    public void setActors(ArrayList<Actor> actors) {
+        this.actors = actors;
     }
 
     @Override
