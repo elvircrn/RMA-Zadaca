@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            DataProvider.getInstance().seed();
         }
 
         String currentLanguage = Locale.getDefault().getDisplayLanguage();
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     @Override
     protected void onResume() {
         super.onResume();
-        DataProvider.getInstance().seed();
+        // DataProvider.getInstance().seed();
     }
 
     protected void initFragments(boolean isSaved) {

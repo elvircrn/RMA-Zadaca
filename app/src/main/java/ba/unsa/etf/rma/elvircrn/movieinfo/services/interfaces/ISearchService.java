@@ -9,7 +9,7 @@ import rx.Observable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import retrofit2.http.GET;
 
-public interface ITheMovieDBService {
+public interface ISearchService {
     @GET("3/search/person")
     Observable<ActorSearchResponseDTO> searchActorsByName(@Query("query")String name);
 }

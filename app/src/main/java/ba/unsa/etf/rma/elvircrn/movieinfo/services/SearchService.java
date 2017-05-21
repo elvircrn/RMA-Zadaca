@@ -3,12 +3,12 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.services;
 import rx.Observable;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ITheMovieDBService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
 
-public class TheMovieDBService implements ITheMovieDBService {
-    private final ITheMovieDBService theMovieDBService;
+public class SearchService extends BaseService implements ISearchService {
+    private final ISearchService theMovieDBService;
 
-    public TheMovieDBService(ITheMovieDBService theMovieDBService) {
+    public SearchService(ISearchService theMovieDBService) {
         this.theMovieDBService = theMovieDBService;
     }
 

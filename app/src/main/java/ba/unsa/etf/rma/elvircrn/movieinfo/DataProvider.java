@@ -19,6 +19,10 @@ public class DataProvider {
         return directors;
     }
 
+    public void setActors(ArrayList<Actor> actors) {
+        this.actors = actors;
+    }
+
     private ArrayList<Actor> actors;
     private ArrayList<Director> directors;
     private ArrayList<Genre> genres;
@@ -96,7 +100,7 @@ public class DataProvider {
                 .setImgUrl("anthonyhopkins")
                 .setImdbLink("http://www.imdb.com/name/nm0000164/")
                 .setBiografija("Sir Philip Anthony Hopkins, CBE (born 31 December 1937), is a Welsh actor of film, stage, and television.[1] After graduating from the Royal Welsh College of Music & Drama in 1957, he trained at the Royal Academy of Dramatic Art in London, and was then spotted by Laurence Olivier who invited him to join the Royal National Theatre. In 1968, he got his break in film in The Lion in Winter, playing Richard the Lionheart.\n" +
-                        "Considered to be one of the greatest living actors,[2][3][4] Hopkins is well known for his portrayal of Hannibal Lecter in The Silence of the Lambs, for which he won the Academy Award for Best ActorDTO, its sequel Hannibal, and the prequel Red Dragon. Other notable films include The Mask of Zorro, The Bounty, Meet Joe Black, The Elephant Man, Magic, 84 Charing Cross Road, Bram Stoker's Dracula, Legends of the Fall, Thor, The Remains of the Day, Amistad, Nixon, The World's Fastest Indian, Instinct, Fracture, and The Dresser. Since 2016, he has starred in the critically acclaimed HBO television series Westworld.\n" +
+                        "Considered to be one of the greatest living actors,[2][3][4] Hopkins is well known for his portrayal of Hannibal Lecter in The Silence of the Lambs, for which he won the Academy Award for Best PersonDTO, its sequel Hannibal, and the prequel Red Dragon. Other notable films include The Mask of Zorro, The Bounty, Meet Joe Black, The Elephant Man, Magic, 84 Charing Cross Road, Bram Stoker's Dracula, Legends of the Fall, Thor, The Remains of the Day, Amistad, Nixon, The World's Fastest Indian, Instinct, Fracture, and The Dresser. Since 2016, he has starred in the critically acclaimed HBO television series Westworld.\n" +
                         "Along with his Academy Award, Hopkins has won three BAFTA Awards, two Emmys, and the Cecil B. DeMille Award. In 1993, he was knighted by Queen Elizabeth II for services to the arts.[5] He received a star on the Hollywood Walk of Fame in 2003, and was made a Fellow of the British Academy of Film and Television Arts in 2008.[6][7]\n")
                 .createActor());
 

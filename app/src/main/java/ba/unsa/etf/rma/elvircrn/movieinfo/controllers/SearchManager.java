@@ -3,12 +3,12 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.controllers;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.TheMovieDBService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.SearchService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ITheMovieDBService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -17,16 +17,27 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
 
-public class TheMovieDBController {
-    static ITheMovieDBService service;
+public class SearchManager {
+    static ISearchService service;
     private static final String apiKey = "98616f6ba5eb339bef15a7d426f2897a";
     private static final String baseUrl = "https://api.themoviedb.org/";
 
-    private TheMovieDBController() {
+    private SearchManager() {
     }
 
-    static ITheMovieDBService createService() {
+    public static void setService(ISearchService service) {
+        service = service;
+    }
+
+    private static ISearchService getService() {
+        if (service == null)
+            service = createService();
+        return service;
+    }
+
+    static ISearchService createService() {
         OkHttpClient client = new OkHttpClient
                 .Builder()
                 .addInterceptor(new Interceptor() {
@@ -41,13 +52,11 @@ public class TheMovieDBController {
                                 .build();
 
                         request = request.newBuilder().url(url).build();
-
                         Log.d("Http request url: ", request.url().toString());
-
-
                         return chain.proceed(request);
                     }
                 })
+                // .readTimeout(15, TimeUnit.SECONDS)
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -57,16 +66,18 @@ public class TheMovieDBController {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
 
-        return new TheMovieDBService(retrofit.create(ITheMovieDBService.class));
+        return new SearchService(retrofit.create(ISearchService.class));
     }
 
-    private static ITheMovieDBService getService() {
-        if (service == null)
-            service = createService();
-        return service;
-    }
-
-    public static rx.Observable<ActorSearchResponseDTO> searchActorByName(String name) {
-        return getService().searchActorsByName(name);
+    public static Observable<ActorSearchResponseDTO> searchActorByName(String name) {
+        if (name.length() < 2) {
+            return Observable.just(new ActorSearchResponseDTO());
+        } else {
+            return getService().searchActorsByName(name);
+        }
     }
 }
+
+
+
+

@@ -8,6 +8,8 @@ import rx.subjects.BehaviorSubject;
 
 public class RxSearch {
     public static Observable<String> fromSearchView(@NonNull final SearchView searchView) {
+
+        // Emituje posljednji observani item svim subscriberima.
         final BehaviorSubject<String> subject = BehaviorSubject.create("");
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

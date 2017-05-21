@@ -17,12 +17,12 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.ActorAdapter;
 import ba.unsa.etf.rma.elvircrn.movieinfo.common.mappers.ActorMapper;
-import ba.unsa.etf.rma.elvircrn.movieinfo.controllers.TheMovieDBController;
+import ba.unsa.etf.rma.elvircrn.movieinfo.controllers.SearchManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
 import rx.Observable;
@@ -37,7 +37,6 @@ public class ActorListFragment extends Fragment implements ITaggable {
     ActorAdapter actorAdapter;
     ItemClickSupport.OnItemClickListener mListener;
     SearchView searchView;
-
 
     public ActorListFragment() {
     }
@@ -78,49 +77,48 @@ public class ActorListFragment extends Fragment implements ITaggable {
         return view;
     }
 
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
     protected void initSearchView(View view) {
 
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
         RxSearch.fromSearchView(searchView)
-                            .debounce(300, TimeUnit.MILLISECONDS)
-                            .subscribe(new Subscriber<String>() {
-                                @Override
-                                public void onCompleted() {
+                .debounce(300, TimeUnit.MILLISECONDS)
+                // flatMap ne garantuje redoslijed objekata sto je vazno u ovom slucaju
+                // obzirom da korisnik zeli da uvijek vidi rezultat pretrage kao funkcija od
+                // unesenog teksta. concatMap rjesava ovaj problem jer cuva redoslijed.
+                .concatMap(new Func1<String, Observable<ActorSearchResponseDTO>>() {
+                    @Override
+                    public Observable<ActorSearchResponseDTO> call(String name) {
+                        return SearchManager.searchActorByName(name);
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .retry()
+                .subscribe(new Subscriber<ActorSearchResponseDTO>() {
+                    @Override
+                    public void onCompleted() {
 
-                                }
+                    }
 
-                                @Override
-                                public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
 
-                                }
-
-                                @Override
-                                public void onNext(String name) {
-                                    TheMovieDBController.searchActorByName(name)
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribeOn(Schedulers.newThread())
-                                            .subscribe(new Subscriber<ActorSearchResponseDTO>() {
-                                                @Override
-                                                public void onCompleted() {
-
-                                                }
-
-                                                @Override
-                                                public void onError(Throwable e) {
-                                                    e.printStackTrace();
-                                                }
-
-                                                @Override
-                                                public void onNext(ActorSearchResponseDTO actorSearchResponseDTO) {
-                                                    List<ActorDTO> actorDTOs = actorSearchResponseDTO.getActors();
-                                                    ArrayList<Actor> actors = ActorMapper.getActorModels(actorDTOs);
-                                                    actorAdapter.setActors(actors);
-                                                    actorAdapter.notifyDataSetChanged();
-                                                }
-                                            });
-                                }
-                            });
+                    @Override
+                    public void onNext(ActorSearchResponseDTO actorSearchResponseDTO) {
+                        List<PersonDTO> personDTOs = actorSearchResponseDTO.getActors();
+                        ArrayList<Actor> actors = ActorMapper.getActorModels(personDTOs);
+                        actorAdapter.setActors(actors);
+                        DataProvider.getInstance().setActors(actors);
+                        actorAdapter.notifyDataSetChanged();
+                    }
+                });
 
     }
 
@@ -147,7 +145,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                 public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                     if (getActivity() instanceof OnFragmentInteractionListener) {
                         Actor actor = DataProvider.getInstance().getActors().get(position);
-                        OnFragmentInteractionListener mainActivity = (OnFragmentInteractionListener)getActivity();
+                        OnFragmentInteractionListener mainActivity = (OnFragmentInteractionListener) getActivity();
                         mainActivity.onFragmentInteraction(actor);
                     }
                 }

@@ -13,7 +13,7 @@ public class ActorSearchResponseDTO {
     private Integer page;
     @SerializedName("results")
     @Expose
-    private List<ActorDTO> actors = null;
+    private List<PersonDTO> actors = null;
     @SerializedName("total_actors")
     @Expose
     private Integer totalActors;
@@ -30,11 +30,11 @@ public class ActorSearchResponseDTO {
         this.page = page;
     }
 
-    public List<ActorDTO> getActors() {
+    public List<PersonDTO> getActors() {
         return actors;
     }
 
-    public void setActors(ArrayList<ActorDTO> actors) {
+    public void setActors(ArrayList<PersonDTO> actors) {
         this.actors = actors;
     }
 
