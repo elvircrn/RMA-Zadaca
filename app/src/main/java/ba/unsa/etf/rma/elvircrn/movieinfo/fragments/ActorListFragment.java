@@ -23,17 +23,22 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.DirectorMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.functions.FuncN;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
@@ -111,48 +116,44 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
-                //.observeOn(AndroidSchedulers.mainThread())
-                .observeOn(Schedulers.newThread())
-                .concatMap(new Func1<ActorSearchResponseDTO, Observable<ActorSearchResponseDTO>>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .concatMap(new Func1<ActorSearchResponseDTO, Observable<MovieCreditsDTO>>() {
                     @Override
-                    public Observable<ActorSearchResponseDTO> call(ActorSearchResponseDTO actorSearchResponseDTO) {
-                        /*
-                        TODO: Provjeri treba li filtrirati
-                        ArrayList<PersonDTO> filtered = new ArrayList<>();
+                    public Observable<MovieCreditsDTO> call(ActorSearchResponseDTO actorSearchResponseDTO) {
+                        final ReplaySubject<MovieCreditsDTO> replaySubject = ReplaySubject.create();
 
                         for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
-                            MovieCreditsDTO creditsDTO = PeopleManager.getInstance()
-                                    .getMovieCredits(personDTO.getId()).toBlocking().first();
+                            PeopleManager.getInstance().getMovieCredits(personDTO.getId())
+                                .subscribe(new Subscriber<MovieCreditsDTO>() {
+                                    @Override
+                                    public void onCompleted() {
+                                        replaySubject.onCompleted();
+                                    }
 
-                            if (creditsDTO.getCast() != null)
-                                filtered.add(personDTO);
+                                    @Override
+                                    public void onError(Throwable e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    @Override
+                                    public void onNext(MovieCreditsDTO movieCreditsDTO) {
+                                        replaySubject.onNext(movieCreditsDTO);
+                                    }
+                                });
                         }
 
-                        actorSearchResponseDTO.setActors(filtered);
-                        */
-
-                        return Observable.just(actorSearchResponseDTO);
+                        return replaySubject;
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .retry()
-                .subscribe(new Subscriber<ActorSearchResponseDTO>() {
+                .collect(new Func0<ArrayList<MovieCreditsDTO>>() {
                     @Override
-                    public void onCompleted() {
+                    public ArrayList<MovieCreditsDTO> call() {
+                        return new ArrayList<>();
                     }
-
+                }, new Action2<ArrayList<MovieCreditsDTO>, MovieCreditsDTO>() {
                     @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(ActorSearchResponseDTO actorSearchResponseDTO) {
-                        List<PersonDTO> personDTOs = actorSearchResponseDTO.getActors();
-                        ArrayList<Actor> actors = PersonMapper.getActorModels(personDTOs);
-                        actorAdapter.setActors(actors);
-                        DataProvider.getInstance().setActors(actors);
-                        actorAdapter.notifyDataSetChanged();
+                    public void call(ArrayList<MovieCreditsDTO> movieCreditsDTOs, MovieCreditsDTO movieCreditsDTO) {
+                        movieCreditsDTOs.add(movieCreditsDTO);
                     }
                 });
 

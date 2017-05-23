@@ -1,8 +1,18 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 public class Director {
-    protected String name;
-    protected String lastName;
+    protected int id = 0;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    protected String name = "";
+    protected String lastName = "";
 
     public String getName() { return name; }
 
@@ -17,6 +27,8 @@ public class Director {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+    public Director() { }
 
     public Director(String name, String lastName) {
         this.name = name;

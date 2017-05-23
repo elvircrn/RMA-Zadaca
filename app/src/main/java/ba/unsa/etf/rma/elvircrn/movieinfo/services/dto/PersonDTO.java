@@ -4,6 +4,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.services.dto;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PersonDTO {
@@ -46,6 +47,19 @@ public class PersonDTO {
     @SerializedName("profile_path")
     @Expose
     private String profilePath;
+
+
+
+    public ArrayList<CrewItemDTO> getCrewItemDTOs() {
+        return crewItemDTOs;
+    }
+
+    public void setCrewItemDTOs(ArrayList<CrewItemDTO> crewItemDTOs) {
+        this.crewItemDTOs = crewItemDTOs;
+    }
+
+    private ArrayList<CrewItemDTO> crewItemDTOs;
+
 
     public String getBiography() {
         return biography;

@@ -22,6 +22,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import rx.Subscriber;
@@ -129,10 +130,14 @@ public class BiographyFragment extends Fragment implements ITaggable {
                         ArrayList<Integer> genreIds = new ArrayList<>();
                         DataProvider.getInstance().setSelectedGenres(new ArrayList<Genre>());
 
-                        for (Movie movie : BiographyFragment.this.actor.getMovies())
+                        for (Movie movie : BiographyFragment.this.actor.getMovies()) {
                             for (int genreId : movie.getGenreIds())
                                 if (!genreIds.contains(genreId))
                                     genreIds.add(genreId);
+
+
+
+                        }
 
                         for (int genreId : genreIds)
                             for (Genre genre : DataProvider.getInstance().getGenres())

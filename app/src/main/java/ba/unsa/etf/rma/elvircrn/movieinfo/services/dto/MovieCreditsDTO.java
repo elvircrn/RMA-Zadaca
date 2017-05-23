@@ -11,7 +11,7 @@ public class MovieCreditsDTO {
     private List<Cast> cast = null;
     @SerializedName("crew")
     @Expose
-    private List<Crew> crew = null;
+    private List<CrewItemDTO> crew = null;
     @SerializedName("id")
     @Expose
     private Integer id;
@@ -24,11 +24,11 @@ public class MovieCreditsDTO {
         this.cast = cast;
     }
 
-    public List<Crew> getCrew() {
+    public List<CrewItemDTO> getCrew() {
         return crew;
     }
 
-    public void setCrew(List<Crew> crew) {
+    public void setCrew(List<CrewItemDTO> crew) {
         this.crew = crew;
     }
 
@@ -41,6 +41,5 @@ public class MovieCreditsDTO {
     }
 
     private class Cast { }
-    private class Crew { }
 }
 
