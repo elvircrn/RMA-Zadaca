@@ -16,15 +16,11 @@ public class SearchManager {
     }
 
     private SearchManager() {
-         service = ServiceFactory.getInstance().createSerachService();
+        service = ServiceFactory.getInstance().createSerachService();
     }
 
     public Observable<ActorSearchResponseDTO> searchActorByName(String name) {
-        if (name.length() < 2) {
-            return Observable.just(new ActorSearchResponseDTO());
-        } else {
-            return service.searchActorsByName(name);
-        }
+        return service.searchActorsByName(name);
     }
 
     public static SearchManager getInstance() {
