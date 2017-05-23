@@ -24,9 +24,6 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
     /**
@@ -60,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
         initFragments(savedInstanceState != null);
         initSearch();
-
+/*
         GenreManager.getInstance().getGenres()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -81,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                         DataProvider.getInstance().setGenres(GenreMapper.toGenres(genresDTO));
                         unsubscribe();
                     }
-                });
+                });*/
     }
 
     protected void initSearch() {

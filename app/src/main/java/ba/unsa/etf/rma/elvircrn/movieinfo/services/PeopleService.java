@@ -3,8 +3,8 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.services;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
+import io.reactivex.Observable;
 import retrofit2.http.Path;
-import rx.Observable;
 
 public class PeopleService implements IPeopleService {
     private final IPeopleService service;

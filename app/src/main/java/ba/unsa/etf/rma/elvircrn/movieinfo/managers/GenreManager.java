@@ -3,7 +3,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IGenreService;
-import rx.Observable;
+import io.reactivex.Observable;
 
 public class GenreManager {
     IGenreService service;

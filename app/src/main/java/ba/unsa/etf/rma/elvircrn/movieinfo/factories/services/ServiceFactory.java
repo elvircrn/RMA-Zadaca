@@ -2,6 +2,8 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.factories.services;
 
 import android.util.Log;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+
 import java.io.IOException;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.GenreService;
@@ -16,7 +18,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ServiceFactory {
@@ -65,14 +66,14 @@ public class ServiceFactory {
                 .baseUrl(BASE_URL)
                 .client(SEARCH_CLIENT)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         BASIC_RETROFIT = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(BASIC_CLIENT)
                 .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 

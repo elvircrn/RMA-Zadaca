@@ -25,9 +25,6 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class BiographyFragment extends Fragment implements ITaggable {
     Actor actor = new Actor();
@@ -105,7 +102,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
     public void setActor(Actor actor) {
         this.actor = actor;
-
+/*
         PeopleManager.getInstance().getDetails(actor.getId())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -147,7 +144,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
                     }
                 });
-
+*/
 
 
         binding.setActor(actor);

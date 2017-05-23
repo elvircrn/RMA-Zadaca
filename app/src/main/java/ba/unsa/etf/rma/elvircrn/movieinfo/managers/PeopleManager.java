@@ -4,7 +4,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
-import rx.Observable;
+import io.reactivex.Observable;
 
 public class PeopleManager {
     private IPeopleService service;

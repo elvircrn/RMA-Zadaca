@@ -3,7 +3,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Initialization-on-demand holder idion za thread-safe i brzu inicijalizaciju.

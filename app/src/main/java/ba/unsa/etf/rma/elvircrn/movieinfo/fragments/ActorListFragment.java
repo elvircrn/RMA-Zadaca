@@ -1,6 +1,5 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
-import android.icu.text.Replaceable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,9 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import org.reactivestreams.Subscriber;
+
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
@@ -23,27 +23,24 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
-import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.DirectorMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.FuncN;
-import rx.observables.GroupedObservable;
-import rx.schedulers.Schedulers;
-import rx.subjects.BehaviorSubject;
-import rx.subjects.ReplaySubject;
+
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.Observable;
+import io.reactivex.functions.*;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.ReplaySubject;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
@@ -98,48 +95,145 @@ public class ActorListFragment extends Fragment implements ITaggable {
     protected void initSearchView(View view) {
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
-        RxSearch.fromSearchView(searchView)
+
+        Observable<ActorSearchResponseDTO> searchStream = RxSearch.fromSearchView(searchView)
                 .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(new Func1<String, Boolean>() {
+                .filter(new Predicate<String>() {
                     @Override
-                    public Boolean call(String s) {
+                    public boolean test(@NonNull String s) throws Exception {
                         return s.length() > 2;
                     }
                 })
-                // flatMap ne garantuje redoslijed objekata sto je vazno u ovom slucaju
-                // obzirom da korisnik zeli da uvijek vidi rezultat pretrage kao funkcija od
-                // unesenog teksta. concatMap rjesava ovaj problem jer cuva redoslijed.
-                .concatMap(new Func1<String, Observable<ActorSearchResponseDTO>>() {
+                .flatMap(new Function<String, Observable<ActorSearchResponseDTO>>() {
                     @Override
-                    public Observable<ActorSearchResponseDTO> call(String name) {
-                        return SearchManager.getInstance().searchActorByName(name);
+                    public Observable<ActorSearchResponseDTO> apply(@NonNull String s) throws Exception {
+                        return SearchManager.getInstance().searchActorByName(s);
                     }
                 })
+                .retry();
+
+        Single<ArrayList<MovieCreditsDTO>> creditsStream = searchStream
+                .map(new Function<ActorSearchResponseDTO, Observable<MovieCreditsDTO>>() {
+                    @Override
+                    public Observable<MovieCreditsDTO> apply(@NonNull final ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                        return Observable.create(new ObservableOnSubscribe<MovieCreditsDTO>() {
+                            @Override
+                            public void subscribe(@NonNull final ObservableEmitter<MovieCreditsDTO> e) throws Exception {
+                                for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
+                                    PeopleManager.getInstance().getMovieCredits(personDTO.getId())
+                                            .subscribeOn(Schedulers.newThread())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .retry()
+                                            .subscribe(new Consumer<MovieCreditsDTO>() {
+                                                @Override
+                                                public void accept(@NonNull MovieCreditsDTO movieCreditsDTO) throws Exception {
+                                                    e.onNext(movieCreditsDTO);
+                                                }
+                                            });
+                                    e.onComplete();
+                                }
+
+                            }
+                        });
+                    }
+                })
+                .collect(new Callable<ArrayList<MovieCreditsDTO>>() {
+                             @Override
+                             public ArrayList<MovieCreditsDTO> call() throws Exception {
+                                 return new ArrayList<>();
+                             }
+                         },
+                        new BiConsumer<ArrayList<MovieCreditsDTO>, Observable<MovieCreditsDTO>>() {
+                            @Override
+                            public void accept(final ArrayList<MovieCreditsDTO> movieCreditsDTOs, Observable<MovieCreditsDTO> movieCreditsDTOObservable) throws Exception {
+                                movieCreditsDTOObservable.subscribe(new Consumer<MovieCreditsDTO>() {
+                                    @Override
+                                    public void accept(@NonNull MovieCreditsDTO movieCreditsDTO) throws Exception {
+                                        movieCreditsDTOs.add(movieCreditsDTO);
+                                    }
+                                });
+                            }
+                        }
+                        /*new BiConsumer<ArrayList<MovieCreditsDTO>, MovieCreditsDTO>() {
+                            @Override
+                            public void accept(ArrayList<MovieCreditsDTO> movieCreditsDTOs, MovieCreditsDTO movieCreditsDTO) throws Exception {
+                                movieCreditsDTOs.add(movieCreditsDTO);
+                            }
+                        }*/);
+
+        creditsStream
+                .subscribe(new Consumer<ArrayList<MovieCreditsDTO>>() {
+            @Override
+            public void accept(@NonNull ArrayList<MovieCreditsDTO> movieCreditsDTOs) throws Exception {
+                int x = 2;
+            }
+        });
+
+
+        Observable.zip(searchStream, creditsStream.toObservable(), new BiFunction<ActorSearchResponseDTO, ArrayList<MovieCreditsDTO>, ActorSearchResponseDTO>() {
+            @Override
+            public ActorSearchResponseDTO apply(@NonNull ActorSearchResponseDTO actorSearchResponseDTO, @NonNull ArrayList<MovieCreditsDTO> movieCreditsDTOs) throws Exception {
+                ArrayList<PersonDTO> filtered = new ArrayList<>();
+                for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
+                    boolean found = false;
+                    for (MovieCreditsDTO movieCreditDTO : movieCreditsDTOs) {
+                        if (personDTO.getId().equals(movieCreditDTO.getId()) &&
+                                movieCreditDTO.getCast() != null) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        filtered.add(personDTO);
+                }
+                actorSearchResponseDTO.setActors(filtered);
+                return actorSearchResponseDTO;
+            }
+        }).subscribe(new Consumer<ActorSearchResponseDTO>() {
+            @Override
+            public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                actorAdapter.setActors(actors);
+                DataProvider.getInstance().setActors(actors);
+                actorAdapter.notifyDataSetChanged();
+            }
+        });
+
+
+        /*
+        Observable<ArrayList<MovieCreditsDTO>> creditsStream = searchStream
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .concatMap(new Func1<ActorSearchResponseDTO, Observable<MovieCreditsDTO>>() {
                     @Override
-                    public Observable<MovieCreditsDTO> call(ActorSearchResponseDTO actorSearchResponseDTO) {
+                    public Observable<MovieCreditsDTO> call(final ActorSearchResponseDTO actorSearchResponseDTO) {
                         final ReplaySubject<MovieCreditsDTO> replaySubject = ReplaySubject.create();
 
+                        final int[] count = {0};
                         for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
                             PeopleManager.getInstance().getMovieCredits(personDTO.getId())
-                                .subscribe(new Subscriber<MovieCreditsDTO>() {
-                                    @Override
-                                    public void onCompleted() {
-                                        replaySubject.onCompleted();
-                                    }
+                                    .subscribeOn(Schedulers.newThread())
+                                    .observeOn(Schedulers.)
+                                    .retry()
+                                    .subscribe(new Subscriber<MovieCreditsDTO>() {
+                                        @Override
+                                        public void onCompleted() {
+                                        }
 
-                                    @Override
-                                    public void onError(Throwable e) {
-                                        e.printStackTrace();
-                                    }
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            e.printStackTrace();
+                                        }
 
-                                    @Override
-                                    public void onNext(MovieCreditsDTO movieCreditsDTO) {
-                                        replaySubject.onNext(movieCreditsDTO);
-                                    }
-                                });
+                                        @Override
+                                        public void onNext(MovieCreditsDTO movieCreditsDTO) {
+                                            replaySubject.onNext(movieCreditsDTO);
+                                            count[0]++;
+                                            if (count[0] == actorSearchResponseDTO.getActors().size())
+                                                replaySubject.onCompleted();
+                                        }
+                                    });
                         }
 
                         return replaySubject;
@@ -157,6 +251,65 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     }
                 });
 
+        creditsStream.subscribe(new Subscriber<ArrayList<MovieCreditsDTO>>() {
+            @Override
+            public void onCompleted() {
+                int y = 2;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(ArrayList<MovieCreditsDTO> movieCreditsDTOs) {
+                int x = 1;
+            }
+        });
+/*
+        Observable.zip(searchStream.asObservable(), creditsStream.asObservable(), new Func2<ActorSearchResponseDTO, ArrayList<MovieCreditsDTO>, ActorSearchResponseDTO>() {
+            @Override
+            public ActorSearchResponseDTO call(ActorSearchResponseDTO actorSearchResponseDTO, ArrayList<MovieCreditsDTO> movieCreditsDTOs) {
+                ArrayList<PersonDTO> filtered = new ArrayList<>();
+                for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
+                    boolean found = false;
+                    for (MovieCreditsDTO movieCreditDTO : movieCreditsDTOs) {
+                        if (Objects.equals(personDTO.getId(), movieCreditDTO.getId()) &&
+                                movieCreditDTO.getCast() != null) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        filtered.add(personDTO);
+                }
+                actorSearchResponseDTO.setActors(filtered);
+                return actorSearchResponseDTO;
+            }
+        })
+                .asObservable()
+                .subscribe(new Subscriber<ActorSearchResponseDTO>() {
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(ActorSearchResponseDTO actorSearchResponseDTO) {
+                        ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                        actorAdapter.setActors(actors);
+                        DataProvider.getInstance().setActors(actors);
+                        actorAdapter.notifyDataSetChanged();
+                    }
+                });*/
     }
 
     @Override
