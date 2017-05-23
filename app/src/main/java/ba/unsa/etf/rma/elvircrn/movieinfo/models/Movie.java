@@ -1,77 +1,32 @@
-package ba.unsa.etf.rma.elvircrn.movieinfo.services.dto;
+package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
-import com.google.gson.annotations.Expose;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MovieDTO {
-
-    @SerializedName("poster_path")
-    @Expose
-    private Object posterPath;
-    @SerializedName("adult")
-    @Expose
+public class Movie implements Parcelable {
     private Boolean adult;
-    @SerializedName("overview")
-    @Expose
     private String overview;
-    @SerializedName("release_date")
-    @Expose
     private String releaseDate;
-    @SerializedName("original_title")
-    @Expose
     private String originalTitle;
-    @SerializedName("genre_ids")
-    @Expose
     private List<Integer> genreIds = null;
-    @SerializedName("id")
-    @Expose
     private Integer id;
-    @SerializedName("media_type")
-    @Expose
     private String mediaType;
-    @SerializedName("original_language")
-    @Expose
     private String originalLanguage;
-    @SerializedName("title")
-    @Expose
     private String title;
-    @SerializedName("backdrop_path")
-    @Expose
-    private Object backdropPath;
-    @SerializedName("popularity")
-    @Expose
     private Double popularity;
-    @SerializedName("vote_count")
-    @Expose
     private Integer voteCount;
-    @SerializedName("video")
-    @Expose
     private Boolean video;
-    @SerializedName("vote_average")
-    @Expose
     private Double voteAverage;
-    @SerializedName("first_air_date")
-    @Expose
     private String firstAirDate;
-    @SerializedName("origin_country")
-    @Expose
     private List<String> originCountry = null;
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("original_name")
-    @Expose
     private String originalName;
 
-    public Object getPosterPath() {
-        return posterPath;
-    }
-
-    public void setPosterPath(Object posterPath) {
-        this.posterPath = posterPath;
-    }
 
     public Boolean getAdult() {
         return adult;
@@ -145,13 +100,6 @@ public class MovieDTO {
         this.title = title;
     }
 
-    public Object getBackdropPath() {
-        return backdropPath;
-    }
-
-    public void setBackdropPath(Object backdropPath) {
-        this.backdropPath = backdropPath;
-    }
 
     public Double getPopularity() {
         return popularity;
@@ -217,4 +165,63 @@ public class MovieDTO {
         this.originalName = originalName;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.adult);
+        dest.writeString(this.overview);
+        dest.writeString(this.releaseDate);
+        dest.writeString(this.originalTitle);
+        dest.writeList(this.genreIds);
+        dest.writeValue(this.id);
+        dest.writeString(this.mediaType);
+        dest.writeString(this.originalLanguage);
+        dest.writeString(this.title);
+        dest.writeValue(this.popularity);
+        dest.writeValue(this.voteCount);
+        dest.writeValue(this.video);
+        dest.writeValue(this.voteAverage);
+        dest.writeString(this.firstAirDate);
+        dest.writeStringList(this.originCountry);
+        dest.writeString(this.name);
+        dest.writeString(this.originalName);
+    }
+
+    public Movie() {
+    }
+
+    protected Movie(Parcel in) {
+        this.adult = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.overview = in.readString();
+        this.releaseDate = in.readString();
+        this.originalTitle = in.readString();
+        this.genreIds = new ArrayList<Integer>();
+        in.readList(this.genreIds, List.class.getClassLoader());
+        this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.mediaType = in.readString();
+        this.originalLanguage = in.readString();
+        this.title = in.readString();
+        this.popularity = (Double) in.readValue(Double.class.getClassLoader());
+        this.voteCount = (Integer) in.readValue(Integer.class.getClassLoader());
+        this.video = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.voteAverage = (Double) in.readValue(Double.class.getClassLoader());
+        this.firstAirDate = in.readString();
+        this.originCountry = in.createStringArrayList();
+        this.name = in.readString();
+        this.originalName = in.readString();
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 }

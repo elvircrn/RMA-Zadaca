@@ -1,9 +1,8 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.services;
 
-import rx.Observable;
-
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
+import rx.Observable;
 
 public class SearchService extends BaseService implements ISearchService {
     private final ISearchService theMovieDBService;
@@ -15,10 +14,5 @@ public class SearchService extends BaseService implements ISearchService {
     @Override
     public Observable<ActorSearchResponseDTO> searchActorsByName(String name) {
         return theMovieDBService.searchActorsByName(name);
-    }
-
-    public interface GetActorSearchResultCallback{
-        void onSuccess(ActorSearchResponseDTO cityListResponse);
-        void onError(Throwable e);
     }
 }

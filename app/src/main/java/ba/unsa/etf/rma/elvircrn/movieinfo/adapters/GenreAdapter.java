@@ -6,8 +6,8 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.GenreListItemBinding;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 
 public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -44,6 +44,8 @@ public class GenreAdapter extends RecyclerView.Adapter<GenreAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
+        if (genres == null)
+            return 0;
         return genres.size();
     }
 }

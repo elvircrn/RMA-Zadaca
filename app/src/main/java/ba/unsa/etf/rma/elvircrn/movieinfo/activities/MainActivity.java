@@ -1,16 +1,14 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
 
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.view.View;
-
 
 import java.util.Locale;
 
@@ -21,7 +19,14 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ButtonsFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.GenreManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
     /**
@@ -32,9 +37,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         NARROW,
         WIDE
     }
-
-    private Actor selectedActor;
-
 
     public LayoutMode getCurrentLayout() {
         return currentLayout;
@@ -50,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState == null) {
-        }
-
         String currentLanguage = Locale.getDefault().getDisplayLanguage();
         DataProvider.getInstance().setLocale(currentLanguage);
 
@@ -61,6 +60,28 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
         initFragments(savedInstanceState != null);
         initSearch();
+
+        GenreManager.getInstance().getGenres()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .retry()
+                .subscribe(new Subscriber<GenresDTO>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(GenresDTO genresDTO) {
+                        DataProvider.getInstance().setGenres(GenreMapper.toGenres(genresDTO));
+                        unsubscribe();
+                    }
+                });
     }
 
     protected void initSearch() {
@@ -69,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     @Override
     protected void onResume() {
         super.onResume();
-        // DataProvider.getInstance().seed();
     }
 
     protected void initFragments(boolean isSaved) {
@@ -93,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     }
 
     public void displayBiography(Actor actor) {
-        this.selectedActor = actor;
         BiographyFragment biographyFragment = getBiographyFragment();
 
         if (biographyFragment != null && biographyFragment.isVisible()) {

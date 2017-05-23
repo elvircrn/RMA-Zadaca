@@ -4,12 +4,15 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 public class Actor implements Parcelable {
+    public static final String IMDB_BASE = "http://www.imdb.com/name/";
+    public static final String IMAGE_BASE = "https://image.tmdb.org/t/p/w500/";
+
     public String getGodinaFormatted() {
         return new StringBuilder().append(String.format(Locale.getDefault(), "%d", yearOfBirth))
                 .append(" / ")
@@ -26,7 +29,15 @@ public class Actor implements Parcelable {
         return id;
     }
 
-    public enum Gender { MALE, FEMALE, NONBINARY };
+    public List<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(List<Movie> movies) {
+        this.movies = movies;
+    }
+
+    public enum Gender { NONBINARY, FEMALE, MALE };
 
     public Actor() { }
 
@@ -51,7 +62,7 @@ public class Actor implements Parcelable {
     }
 
     private String name;
-    private String surname;
+    private String surname = "";
     private String placeOfBirth;
     private int yearOfBirth;
     private int rating;
@@ -61,6 +72,7 @@ public class Actor implements Parcelable {
     private String imdbLink;
     private String imgUrl;
     private int  id;
+    private List<Movie> movies;
 
     public Actor(String name,
                  String surname,
@@ -194,6 +206,8 @@ public class Actor implements Parcelable {
         dest.writeString(this.biography);
         dest.writeString(this.imdbLink);
         dest.writeString(this.imgUrl);
+        dest.writeInt(this.id);
+        dest.writeTypedList(this.movies);
     }
 
     protected Actor(Parcel in) {
@@ -208,9 +222,11 @@ public class Actor implements Parcelable {
         this.biography = in.readString();
         this.imdbLink = in.readString();
         this.imgUrl = in.readString();
+        this.id = in.readInt();
+        this.movies = in.createTypedArrayList(Movie.CREATOR);
     }
 
-    public static final Parcelable.Creator<Actor> CREATOR = new Parcelable.Creator<Actor>() {
+    public static final Creator<Actor> CREATOR = new Creator<Actor>() {
         public Actor createFromParcel(Parcel source) {
             return new Actor(source);
         }

@@ -1,14 +1,13 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.adapters;
 
-import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.DirectorListItemBinding;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 
 public class DirectorAdapter extends RecyclerView.Adapter<DirectorAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {

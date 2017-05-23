@@ -2,11 +2,10 @@ package ba.unsa.etf.rma.elvircrn.movieinfo;
 
 
 import java.util.ArrayList;
-import java.util.Map;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
 public class DataProvider {
     private static DataProvider instance = null;
@@ -25,7 +24,23 @@ public class DataProvider {
 
     private ArrayList<Actor> actors;
     private ArrayList<Director> directors;
+
+    public void setGenres(ArrayList<Genre> genres) {
+        this.genres = genres;
+    }
+
     private ArrayList<Genre> genres;
+
+    public ArrayList<Genre> getSelectedGenres() {
+        return selectedGenres;
+    }
+
+    public void setSelectedGenres(ArrayList<Genre> selectedGenres) {
+        this.selectedGenres = selectedGenres;
+    }
+
+    private ArrayList<Genre> selectedGenres;
+
 
     public ArrayList<Genre> getGenres() {
         return genres;

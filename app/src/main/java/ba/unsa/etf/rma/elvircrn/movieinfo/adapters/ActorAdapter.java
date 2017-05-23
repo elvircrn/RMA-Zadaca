@@ -1,17 +1,11 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.adapters;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.databinding.ViewDataBinding;
-
-
 
 import java.util.ArrayList;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorListItemBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 

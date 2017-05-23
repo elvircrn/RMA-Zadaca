@@ -1,29 +1,35 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFancyFragmentBinding;
-import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
-import ba.unsa.etf.rma.elvircrn.movieinfo.listeners.IFragmentChangeListener;
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import java.util.ArrayList;
+
+import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
+import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBinding;
+import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class BiographyFragment extends Fragment implements ITaggable {
-    Actor actor;
+    Actor actor = new Actor();
     private ActorBiographyFragmentBinding binding;
 
     private final static String ACTOR_PARAM_TAG = "PersonDTO";
@@ -38,12 +44,15 @@ public class BiographyFragment extends Fragment implements ITaggable {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (getArguments().containsKey(getActorParamTag()))
-            actor = (Actor)getArguments().get(getActorParamTag());
-
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
+
+        if (getArguments().containsKey(getActorParamTag())) {
+            setActor((Actor) getArguments().get(getActorParamTag()));
+        } else {
+            setActor(new Actor());
+        }
+
         View view = binding.getRoot();
-        binding.setActor(actor);
         return view;
     }
 
@@ -59,7 +68,11 @@ public class BiographyFragment extends Fragment implements ITaggable {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(actor.getImdbLink()));
+                if (actor.getImdbLink() != null && !actor.getImdbLink().isEmpty())
+                    i.setData(Uri.parse(actor.getImdbLink()));
+                else
+                    Toast.makeText(getContext(), String.valueOf(R.string.imdb_toast_error), 3)
+                            .show();
                 startActivity(i);
             }
         });
@@ -91,6 +104,47 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
     public void setActor(Actor actor) {
         this.actor = actor;
+
+        PeopleManager.getInstance().getDetails(actor.getId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .retry(3)
+                .subscribe(new Subscriber<PersonDTO>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        // TODO: Get value from string
+                        Toast.makeText(getContext(), String.valueOf(R.string.bio_toast_error), 3)
+                                .show();
+                    }
+
+                    @Override
+                    public void onNext(PersonDTO personDTO) {
+                        BiographyFragment.this.actor = PersonMapper.toActorFromActor(BiographyFragment.this.actor, personDTO);
+                        binding.setActor(BiographyFragment.this.actor);
+                        ArrayList<Integer> genreIds = new ArrayList<>();
+                        DataProvider.getInstance().setSelectedGenres(new ArrayList<Genre>());
+
+                        for (Movie movie : BiographyFragment.this.actor.getMovies())
+                            for (int genreId : movie.getGenreIds())
+                                if (!genreIds.contains(genreId))
+                                    genreIds.add(genreId);
+
+                        for (int genreId : genreIds)
+                            for (Genre genre : DataProvider.getInstance().getGenres())
+                                if (genre.getId() == genreId)
+                                    DataProvider.getInstance().getSelectedGenres().add(genre);
+
+
+                    }
+                });
+
+
+
         binding.setActor(actor);
     }
 

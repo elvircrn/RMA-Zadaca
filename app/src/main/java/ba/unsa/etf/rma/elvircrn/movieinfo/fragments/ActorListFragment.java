@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
+import android.icu.text.Replaceable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,26 +11,34 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.ActorAdapter;
-import ba.unsa.etf.rma.elvircrn.movieinfo.common.mappers.ActorMapper;
-import ba.unsa.etf.rma.elvircrn.movieinfo.controllers.SearchManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.functions.FuncN;
+import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.ReplaySubject;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
@@ -82,27 +91,54 @@ public class ActorListFragment extends Fragment implements ITaggable {
     }
 
     protected void initSearchView(View view) {
-
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
         RxSearch.fromSearchView(searchView)
                 .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(new Func1<String, Boolean>() {
+                    @Override
+                    public Boolean call(String s) {
+                        return s.length() > 2;
+                    }
+                })
                 // flatMap ne garantuje redoslijed objekata sto je vazno u ovom slucaju
                 // obzirom da korisnik zeli da uvijek vidi rezultat pretrage kao funkcija od
                 // unesenog teksta. concatMap rjesava ovaj problem jer cuva redoslijed.
                 .concatMap(new Func1<String, Observable<ActorSearchResponseDTO>>() {
                     @Override
                     public Observable<ActorSearchResponseDTO> call(String name) {
-                        return SearchManager.searchActorByName(name);
+                        return SearchManager.getInstance().searchActorByName(name);
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
+                //.observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.newThread())
+                .concatMap(new Func1<ActorSearchResponseDTO, Observable<ActorSearchResponseDTO>>() {
+                    @Override
+                    public Observable<ActorSearchResponseDTO> call(ActorSearchResponseDTO actorSearchResponseDTO) {
+                        /*
+                        TODO: Provjeri treba li filtrirati
+                        ArrayList<PersonDTO> filtered = new ArrayList<>();
+
+                        for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
+                            MovieCreditsDTO creditsDTO = PeopleManager.getInstance()
+                                    .getMovieCredits(personDTO.getId()).toBlocking().first();
+
+                            if (creditsDTO.getCast() != null)
+                                filtered.add(personDTO);
+                        }
+
+                        actorSearchResponseDTO.setActors(filtered);
+                        */
+
+                        return Observable.just(actorSearchResponseDTO);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .retry()
                 .subscribe(new Subscriber<ActorSearchResponseDTO>() {
                     @Override
                     public void onCompleted() {
-
                     }
 
                     @Override
@@ -113,7 +149,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     @Override
                     public void onNext(ActorSearchResponseDTO actorSearchResponseDTO) {
                         List<PersonDTO> personDTOs = actorSearchResponseDTO.getActors();
-                        ArrayList<Actor> actors = ActorMapper.getActorModels(personDTOs);
+                        ArrayList<Actor> actors = PersonMapper.getActorModels(personDTOs);
                         actorAdapter.setActors(actors);
                         DataProvider.getInstance().setActors(actors);
                         actorAdapter.notifyDataSetChanged();

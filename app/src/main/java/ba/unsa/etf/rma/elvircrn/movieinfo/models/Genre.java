@@ -1,19 +1,22 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
-import android.support.v4.util.Pair;
-
-import java.util.ArrayList;
 import java.util.TreeMap;
 
 public class Genre {
+    int id;
     private static String locale;
 
-    private TreeMap<String, String> translations;
+    private TreeMap<String, String> translations = new TreeMap<>();
+
+    public Genre(int id, String name, String imgUrl) {
+        this.id = id;
+        this.name = name;
+        this.setImgUrl(imgUrl);
+    }
 
     public Genre(String name, String imgUrl) {
         this.name = name;
-        this.imgUrl = imgUrl;
-        translations = new TreeMap<>();
+        this.setImgUrl(imgUrl);
     }
 
     public static void setLocale(String locale) {
@@ -48,8 +51,12 @@ public class Genre {
     }
 
     public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+        this.imgUrl = imgUrl.replace(" ", "").toLowerCase();
     }
 
-    protected String imgUrl;
+    protected String imgUrl = "genredefault";
+
+    public int getId() {
+        return id;
+    }
 }

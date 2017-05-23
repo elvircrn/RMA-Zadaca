@@ -1,0 +1,37 @@
+package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
+
+import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
+import rx.Observable;
+
+/**
+ * Initialization-on-demand holder idion za thread-safe i brzu inicijalizaciju.
+ */
+public class SearchManager {
+    ISearchService service;
+
+    private static class LazyHolder {
+        static final SearchManager INSTANCE = new SearchManager();
+    }
+
+    private SearchManager() {
+         service = ServiceFactory.getInstance().createSerachService();
+    }
+
+    public Observable<ActorSearchResponseDTO> searchActorByName(String name) {
+        if (name.length() < 2) {
+            return Observable.just(new ActorSearchResponseDTO());
+        } else {
+            return service.searchActorsByName(name);
+        }
+    }
+
+    public static SearchManager getInstance() {
+        return LazyHolder.INSTANCE;
+    }
+}
+
+
+
+

@@ -1,8 +1,7 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
-import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.DirectorAdapter;
-import ba.unsa.etf.rma.elvircrn.movieinfo.activities.MainActivity;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 
@@ -46,7 +44,7 @@ public class DirectorListFragment extends Fragment implements ITaggable {
     public void onResume() {
         super.onResume();
 
-        DataProvider.getInstance().seed();
+        // DataProvider.getInstance().seed();
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
