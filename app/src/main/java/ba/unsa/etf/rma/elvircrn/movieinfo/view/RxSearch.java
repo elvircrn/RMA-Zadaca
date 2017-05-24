@@ -9,9 +9,11 @@ import io.reactivex.ObservableOnSubscribe;
 
 public class RxSearch {
     public static Observable<String> fromSearchView(@NonNull final SearchView searchView) {
+
+
         return Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void subscribe(@io.reactivex.annotations.NonNull final ObservableEmitter<String> e) throws Exception {
+            public void subscribe(@NonNull final ObservableEmitter<String> e) throws Exception {
                 searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
                     public boolean onQueryTextSubmit(String query) {

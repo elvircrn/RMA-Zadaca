@@ -107,7 +107,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                             public void accept(@NonNull Throwable throwable) throws Exception {
                                 throwable.printStackTrace();
                             }
-                        }).toObservable().subscribeOn(Schedulers.newThread());
+                        }).toObservable();
                     }
                 })
                 .retry();
