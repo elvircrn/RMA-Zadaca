@@ -4,33 +4,29 @@ import android.support.annotation.NonNull;
 import android.widget.SearchView;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.subjects.BehaviorSubject;
 
 public class RxSearch {
     public static Observable<String> fromSearchView(@NonNull final SearchView searchView) {
+        final BehaviorSubject<String> subject = BehaviorSubject.create();
 
-
-        return Observable.create(new ObservableOnSubscribe<String>() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void subscribe(@NonNull final ObservableEmitter<String> e) throws Exception {
-                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        e.onComplete();
-                        return true;
-                    }
+            public boolean onQueryTextSubmit(String query) {
+                subject.onComplete();
+                return true;
+            }
 
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        if (!newText.isEmpty()) {
-                            e.onNext(newText);
-                        }
-                        return true;
-                    }
-                });
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (!newText.isEmpty()) {
+                    subject.onNext(newText);
+                }
+                return true;
             }
         });
+
+        return subject;
     }
 
 }
