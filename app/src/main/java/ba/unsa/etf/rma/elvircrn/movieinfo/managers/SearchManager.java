@@ -3,7 +3,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Initialization-on-demand holder idion za thread-safe i brzu inicijalizaciju.
@@ -19,7 +19,7 @@ public class SearchManager {
         service = ServiceFactory.getInstance().createSerachService();
     }
 
-    public Observable<ActorSearchResponseDTO> searchActorByName(String name) {
+    public Single<ActorSearchResponseDTO> searchActorByName(String name) {
         return service.searchActorsByName(name);
     }
 

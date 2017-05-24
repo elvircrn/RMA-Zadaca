@@ -4,6 +4,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.Path;
 
 public class PeopleService implements IPeopleService {
@@ -23,7 +24,7 @@ public class PeopleService implements IPeopleService {
     }
 
     @Override
-    public Observable<MovieCreditsDTO> getMovieCredits(@Path("person_id") int personId) {
+    public Single<MovieCreditsDTO> getMovieCredits(@Path("person_id") int personId) {
         return service.getMovieCredits(personId);
     }
 }

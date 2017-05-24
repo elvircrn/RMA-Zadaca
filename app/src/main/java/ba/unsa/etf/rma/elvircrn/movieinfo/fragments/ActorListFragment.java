@@ -27,14 +27,14 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
-
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.Observable;
-import io.reactivex.functions.*;
+import io.reactivex.ObservableSource;
+import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -99,79 +99,84 @@ public class ActorListFragment extends Fragment implements ITaggable {
                         return s.length() > 2;
                     }
                 })
-                .flatMap(new Function<String, Observable<ActorSearchResponseDTO>>() {
+                .concatMap(new Function<String, Observable<ActorSearchResponseDTO>>() {
                     @Override
                     public Observable<ActorSearchResponseDTO> apply(@NonNull String s) throws Exception {
-                        return SearchManager.getInstance().searchActorByName(s);
+                        return SearchManager.getInstance().searchActorByName(s).doOnError(new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                            }
+                        }).toObservable().subscribeOn(Schedulers.newThread());
                     }
                 })
                 .retry();
 
-        Single<List<MovieCreditsDTO>> creditsStream = searchStream
-                .flatMap(new Function<ActorSearchResponseDTO, Observable<MovieCreditsDTO>>() {
+
+
+        Observable<List<MovieCreditsDTO>> creditsStream = searchStream
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public Observable<MovieCreditsDTO> apply(@NonNull final ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        return Observable.create(new ObservableOnSubscribe<MovieCreditsDTO>() {
-                            @Override
-                            public void subscribe(@NonNull final ObservableEmitter<MovieCreditsDTO> e) throws Exception {
-                                ArrayList<Observable<MovieCreditsDTO>> credits = new ArrayList<>();
-                                for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
-                                    PeopleManager.getInstance().getMovieCredits(personDTO.getId())
-                                            .subscribeOn(Schedulers.newThread())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .retry()
-                                            .subscribe(new Consumer<MovieCreditsDTO>() {
-                                                @Override
-                                                public void accept(@NonNull MovieCreditsDTO movieCreditsDTO) throws Exception {
-                                                    e.onNext(movieCreditsDTO);
-                                                }
-                                            });
-                                }
-                                e.onComplete();
-                            }
-                        });
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
                     }
                 })
-                .toList();
+                .flatMap(new Function<ActorSearchResponseDTO, ObservableSource<List<MovieCreditsDTO>>>() {
+                    @Override
+                    public ObservableSource<List<MovieCreditsDTO>> apply(@NonNull final ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                       return Observable.fromIterable(actorSearchResponseDTO.getActors())
+                                .flatMap(new Function<PersonDTO, Observable<MovieCreditsDTO>>() {
+                                    @Override
+                                    public Observable<MovieCreditsDTO> apply(@NonNull PersonDTO personDTO) throws Exception {
+                                        return PeopleManager.getInstance().getMovieCredits(personDTO.getId()).toObservable();
+                                    }
+                                }).toList().toObservable();
+                    }
+                });
+
 
         creditsStream.subscribe(new Consumer<List<MovieCreditsDTO>>() {
             @Override
             public void accept(@NonNull List<MovieCreditsDTO> movieCreditsDTOs) throws Exception {
                 int x = 2;
             }
-
         });
-
-
-        Observable.zip(searchStream, creditsStream.toObservable(), new BiFunction<ActorSearchResponseDTO, List<MovieCreditsDTO>, ActorSearchResponseDTO>() {
-            @Override
-            public ActorSearchResponseDTO apply(@NonNull ActorSearchResponseDTO actorSearchResponseDTO, @NonNull List<MovieCreditsDTO> movieCreditsDTOs) throws Exception {
-                ArrayList<PersonDTO> filtered = new ArrayList<>();
-                for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
-                    boolean found = false;
-                    for (MovieCreditsDTO movieCreditDTO : movieCreditsDTOs) {
-                        if (personDTO.getId().equals(movieCreditDTO.getId()) &&
-                                movieCreditDTO.getCast() != null) {
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (found)
-                        filtered.add(personDTO);
-                }
-                actorSearchResponseDTO.setActors(filtered);
-                return actorSearchResponseDTO;
-            }
-        }).subscribe(new Consumer<ActorSearchResponseDTO>() {
+        searchStream.subscribe(new Consumer<ActorSearchResponseDTO>() {
             @Override
             public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
-                actorAdapter.setActors(actors);
-                DataProvider.getInstance().setActors(actors);
-                actorAdapter.notifyDataSetChanged();
+                int x = 2;
             }
         });
+
+        creditsStream.zipWith(searchStream, new BiFunction<List<MovieCreditsDTO>, ActorSearchResponseDTO, ActorSearchResponseDTO>() {
+                    @Override
+                    public ActorSearchResponseDTO apply(@NonNull List<MovieCreditsDTO> movieCreditsDTOs, @NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                        ArrayList<PersonDTO> filtered = new ArrayList<>();
+                        for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
+                            boolean found = false;
+                            for (MovieCreditsDTO movieCreditDTO : movieCreditsDTOs) {
+                                if (personDTO.getId().equals(movieCreditDTO.getId()) &&
+                                        movieCreditDTO.getCast() != null) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (found)
+                                filtered.add(personDTO);
+                        }
+                        actorSearchResponseDTO.setActors(filtered);
+                        return actorSearchResponseDTO;
+                    }
+                }).subscribe(new Consumer<ActorSearchResponseDTO>() {
+                            @Override
+                            public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                                ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                                actorAdapter.setActors(actors);
+                                DataProvider.getInstance().setActors(actors);
+                                actorAdapter.notifyDataSetChanged();
+                            }
+                        });
 
 
         /*

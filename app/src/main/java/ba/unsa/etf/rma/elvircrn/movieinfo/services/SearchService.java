@@ -2,7 +2,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.services;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class SearchService extends BaseService implements ISearchService {
     private final ISearchService theMovieDBService;
@@ -12,7 +12,7 @@ public class SearchService extends BaseService implements ISearchService {
     }
 
     @Override
-    public Observable<ActorSearchResponseDTO> searchActorsByName(String name) {
+    public Single<ActorSearchResponseDTO> searchActorsByName(String name) {
         return theMovieDBService.searchActorsByName(name);
     }
 }
