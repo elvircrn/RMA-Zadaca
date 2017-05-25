@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,8 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
@@ -20,19 +21,27 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBind
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.GenreManager;
+import ba.unsa.etf.rma.elvircrn.movieinfo.managers.MovieManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
-import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Function3;
+import io.reactivex.schedulers.Schedulers;
+
+import static ba.unsa.etf.rma.elvircrn.movieinfo.mappers.DirectorMapper.DIRECTOR_ROLE;
 
 public class BiographyFragment extends Fragment implements ITaggable {
     private final static String ACTOR_PARAM_TAG = "PersonDTO";
@@ -119,72 +128,121 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
     public void setActor(Actor actor) {
         this.actor = actor;
+        binding.setActor(actor);
 
-
+        Observable<List<MovieCreditsDTO>> creditsStream = Observable.fromIterable(actor.getMovies())
+                .flatMap(new Function<Movie, ObservableSource<MovieCreditsDTO>>() {
+                    @Override
+                    public ObservableSource<MovieCreditsDTO> apply(@NonNull Movie movie) throws Exception {
+                        return MovieManager.getInstance()
+                                .getMovieCredits(movie.getId())
+                                .toObservable()
+                                .subscribeOn(Schedulers.newThread());
+                    }
+                })
+                .toList()
+                .toObservable();
 
         if (DataProvider.getInstance().getGenres().isEmpty()) {
-            Observable.zip(GenreManager.getInstance().getGenres().toObservable(), PeopleManager.getInstance().getDetails(actor.getId()).toObservable(),
-                    new BiFunction<GenresDTO, PersonDTO, ArrayList<Genre>>() {
-                        @Override
-                        public ArrayList<Genre> apply(@NonNull GenresDTO genresDTO, @NonNull PersonDTO personDTO) throws Exception {
-                            return null;
-                        }
-                    })
-                    .subscribe(new Consumer<ArrayList<Genre>>() {
-                        @Override
-                        public void accept(@NonNull ArrayList<Genre> genres) throws Exception {
+            subscriberHolder.add(
+                    Observable.zip(GenreManager.getInstance().getGenres().toObservable(),
+                            PeopleManager.getInstance().getDetails(actor.getId()).toObservable(),
+                            creditsStream,
+                            new Function3<GenresDTO, PersonDTO, List<MovieCreditsDTO>, Void>() {
 
-                        }
-                    });
+                                @Override
+                                public Void apply(@NonNull GenresDTO genresDTO, @NonNull PersonDTO personDTO, @NonNull List<MovieCreditsDTO> credits) throws Exception {
+                                    BiographyFragment.this.actor = PersonMapper.toActorFromActor(BiographyFragment.this.actor, personDTO);
+                                    binding.setActor(BiographyFragment.this.actor);
+                                    ArrayList<Integer> genreIds = new ArrayList<>();
+                                    ArrayList<Genre> genres = new ArrayList<>();
+                                    ArrayList<Integer> directorIds = new ArrayList<>();
+                                    DataProvider.getInstance().getSelectedGenres().clear();
 
 
+                                    // Fill in the genres
+                                    for (Movie movie : BiographyFragment.this.actor.getMovies()) {
+                                        if (movie.getGenreIds() != null
+                                                && !movie.getGenreIds().isEmpty()
+                                                && genreIds.contains(movie.getGenreIds().get(0)))
+                                            genreIds.add(movie.getGenreIds().get(0));
 
-            GenreManager.getInstance().getGenres()
-                    .toObservable()
-                    .compose(Rx.<GenresDTO>applySchedulers())
-                    .retry()
-                    .subscribe(new Consumer<GenresDTO>() {
-                        @Override
-                        public void accept(@NonNull GenresDTO genresDTO) throws Exception {
-                            DataProvider.getInstance().setGenres(GenreMapper.toGenres(genresDTO));
-                        }
-                    });
+                                        if (genreIds.size() == 7)
+                                            break;
+                                    }
 
+                                    for (int genreId : genreIds)
+                                        for (Genre genre : DataProvider.getInstance().getGenres())
+                                            if (genre.getId() == genreId)
+                                                genres.add(genre);
+
+                                    DataProvider.getInstance().setGenres(genres);
+
+                                    // Fill in the directors
+                                    DataProvider.getInstance().getDirectors().clear();
+                                    for (Movie movie : BiographyFragment.this.actor.getMovies())
+                                        if (DataProvider.getInstance().getDirectors().size() < 7)
+                                            for (MovieCreditsDTO movieCreditsDTO : credits)
+                                                if (DataProvider.getInstance().getDirectors().size() < 7 && Objects.equals(movieCreditsDTO.getId(), movie.getId()))
+                                                    for (CrewItemDTO crewItem : movieCreditsDTO.getCrew()) {
+                                                        if (DataProvider.getInstance().getDirectors().size() == 7)
+                                                            break;
+
+                                                        if (!Objects.equals(crewItem.getJob(), DIRECTOR_ROLE) ||
+                                                                DataProvider.getInstance().getDirectors().contains(crewItem.getId()))
+                                                            continue;
+
+                                                        boolean found = false;
+                                                        for (Director director : DataProvider.getInstance().getDirectors())
+                                                            if (director.getId() == crewItem.getId())
+                                                                found = true;
+
+                                                        directorIds.add(crewItem.getId());
+
+                                                        if (!found)
+                                                            DataProvider.getInstance().getDirectors().add(new Director(crewItem.getId(), crewItem.getName(), ""));
+                                                    }
+                                    return null;
+                                }
+                            })
+                            .compose(Rx.<Void>applySchedulers())
+                            .subscribe()
+            );
+        } else {
+            subscriberHolder.add(
+                    PeopleManager.getInstance().getDetails(actor.getId())
+                            .toObservable()
+                            .compose(Rx.<PersonDTO>applySchedulers())
+                            .retry()
+                            .compose(Rx.<PersonDTO>applyError())
+                            .subscribe(new Consumer<PersonDTO>() {
+                                @Override
+                                public void accept(@NonNull PersonDTO personDTO) throws Exception {
+                                    BiographyFragment.this.actor = PersonMapper.toActorFromActor(BiographyFragment.this.actor, personDTO);
+                                    binding.setActor(BiographyFragment.this.actor);
+                                    ArrayList<Integer> genreIds = new ArrayList<>();
+                                    ArrayList<Genre> genres = new ArrayList<>();
+
+                                    DataProvider.getInstance().getSelectedGenres().clear();
+
+                                    for (Movie movie : BiographyFragment.this.actor.getMovies()) {
+                                        for (int genreId : movie.getGenreIds())
+                                            if (!genreIds.contains(genreId))
+                                                genreIds.add(genreId);
+                                    }
+
+                                    for (int genreId : genreIds)
+                                        for (Genre genre : DataProvider.getInstance().getGenres())
+                                            if (genre.getId() == genreId)
+                                                genres.add(genre);
+
+                                    DataProvider.getInstance().setGenres(genres);
+                                }
+                            })
+            );
         }
 
 
-
-        subscriberHolder.add(
-                PeopleManager.getInstance().getDetails(actor.getId())
-                        .toObservable()
-                        .compose(Rx.<PersonDTO>applySchedulers())
-                        .retry(3)
-                        .compose(Rx.<PersonDTO>applyError())
-                        .subscribe(new Consumer<PersonDTO>() {
-                            @Override
-                            public void accept(@NonNull PersonDTO personDTO) throws Exception {
-                                BiographyFragment.this.actor = PersonMapper.toActorFromActor(BiographyFragment.this.actor, personDTO);
-                                binding.setActor(BiographyFragment.this.actor);
-                                ArrayList<Integer> genreIds = new ArrayList<>();
-
-                                DataProvider.getInstance().getSelectedGenres().clear();
-
-                                for (Movie movie : BiographyFragment.this.actor.getMovies()) {
-                                    for (int genreId : movie.getGenreIds())
-                                        if (!genreIds.contains(genreId))
-                                            genreIds.add(genreId);
-                                }
-
-                                for (int genreId : genreIds)
-                                    for (Genre genre : DataProvider.getInstance().getGenres())
-                                        if (genre.getId() == genreId)
-                                            DataProvider.getInstance().getSelectedGenres().add(genre);
-                            }
-                        })
-        );
-
-
-        binding.setActor(actor);
     }
 
     @Override

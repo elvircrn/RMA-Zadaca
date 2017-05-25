@@ -1,27 +1,11 @@
-package ba.unsa.etf.rma.elvircrn.movieinfo.services.dto;
+package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-public class CrewItemDTO {
-
-    @SerializedName("credit_id")
-    @Expose
+public class CrewItem {
     private String creditId;
-    @SerializedName("department")
-    @Expose
     private String department;
-    @SerializedName("id")
-    @Expose
     private Integer id;
-    @SerializedName("job")
-    @Expose
     private String job;
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("profile_path")
-    @Expose
     private String profilePath;
 
     public String getCreditId() {
@@ -73,4 +57,3 @@ public class CrewItemDTO {
     }
 
 }
-

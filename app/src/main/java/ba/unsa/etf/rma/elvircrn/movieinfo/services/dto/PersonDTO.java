@@ -49,6 +49,15 @@ public class PersonDTO {
     private String profilePath;
 
 
+    public ArrayList<MovieDTO> getMovieDTOs() {
+        return movieDTOs;
+    }
+
+    public void setMovieDTOs(ArrayList<MovieDTO> movieDTOs) {
+        this.movieDTOs = movieDTOs;
+    }
+
+    private ArrayList<MovieDTO> movieDTOs;
 
     public ArrayList<CrewItemDTO> getCrewItemDTOs() {
         return crewItemDTOs;

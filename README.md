@@ -5,6 +5,36 @@ Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 
 # 2016/2017
 # RMA
 
+# Spirala 3
+
+# Napomena
+Librariji koje koristim su:
+    RxJava2 i RxAndroid (jer je prejako)
+    Retrofit (olaksava REST stvari)
+    Glide (ima API identicano Picasso-u, a ima aktivniji github)
+    Gson (google-ov library za bindanje json rezultata i klasa)
+
+## Zadatak 1
+Mislio sam da bi bilo vise cool (svakako je zahtjevniji zadatak, pa se nadam da necu biti penalizovan zbog toga) implementirati sistem u kojem korisnik pise tekst, a glumci se populiraju dinamicki u skladu s tim tekstom (nesto kao google search) umjesto buttona. Sistem nije toliko glup da radi requestove za svako ukucano slovo, vec ima period debouncinga. Dakle, korisnik tek nakon sto prestane kucati 0.3s 'okida' requestove, a za ovu potrebu je implementirana klasa RxSearch koja pravi stream teksta.
+
+Dalje sam primjetio da theMovieDB pri searchu vraca doslovno sve ljude, bili oni glumci ili ne. Iako ovaj dio nije bio potreban, za svaku pojedinacnu osobu radim zaseban request u kojem dobijam listu projekata na kojim je radila preko person/{person_id}/movie_credits endpointa. Magicna formula za ovaj problem u rxjavi je flatMap + toList (jer moram sacekati da dobijem sve MovieCredits DTO-ove) + zipWith (da spojim rezultat pretrage i movie credite) + subscribe i switchMap za mapiranje text searcha i rezultata people search endpointa. Bitno je napomenuti da se pretraga okida tek kada korisnik unese barem 3. 
+
+Takodje, posto people search ne vraca detaljne informacije u glumcima, to ce lista glumaca biti populirana incijalno samo sa podacima o imenu i ratingu jer su to jedini dostupni podaci. Primjeticete da kada user izabere nekog glumca, na listi glumaca ce se pojaviti njegovi detalji. Ovaj efekat je posljedica data bindinga kojeg sam odlucio otaviti jer mi se cinio cool (iako sam samo mogao izbrisati polja za datum rodjenja i sl.).
+
+Napominjem da se svi subscriptioni gase kada odgovarajuci fragmenti odu u background.
+
+## Zadatak 2
+
+Implementirano.
+
+## Zadatak 3
+
+## Zadatak 4
+
+## Zadatak 5
+
+Implementirano
+
 # Spirala 2
 
 ## Zadatak 1

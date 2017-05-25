@@ -1,10 +1,13 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.mappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 
 public class PersonMapper {
@@ -33,8 +36,16 @@ public class PersonMapper {
         if (personDTO.getPopularity() != null)
             actor.setRating(personDTO.getPopularity().intValue());
 
-        if (personDTO.getMovies() != null && !personDTO.getMovies().isEmpty())
+        if (personDTO.getMovies() != null && !personDTO.getMovies().isEmpty()) {
             actor.setMovies(MovieMapper.toMovies(personDTO.getMovies()));
+
+            Collections.sort(actor.getMovies(), new Comparator<Movie>() {
+                @Override
+                public int compare(Movie o1, Movie o2) {
+                    return o2.getFirstAirDate().compareTo(o1.getFirstAirDate());
+                }
+            });
+        }
 
         return actor;
     }

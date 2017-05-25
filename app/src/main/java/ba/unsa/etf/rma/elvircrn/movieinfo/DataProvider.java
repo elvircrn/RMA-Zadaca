@@ -23,7 +23,12 @@ public class DataProvider {
     }
 
     private ArrayList<Actor> actors;
-    private ArrayList<Director> directors;
+
+    public void setDirectors(ArrayList<Director> directors) {
+        this.directors = directors;
+    }
+
+    private ArrayList<Director> directors = new ArrayList<>();
 
     public void setGenres(ArrayList<Genre> genres) {
         this.genres = genres;

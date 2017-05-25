@@ -115,10 +115,9 @@ public class ActorListFragment extends Fragment implements ITaggable {
                             public void accept(@NonNull Throwable throwable) throws Exception {
                                 throwable.printStackTrace();
                             }
-                        }).toObservable();
+                        }).toObservable().retry();
                     }
-                })
-                .retry();
+                });
 
         creditsStream = searchStream
                 .compose(Rx.<ActorSearchResponseDTO>applyError())
@@ -131,9 +130,12 @@ public class ActorListFragment extends Fragment implements ITaggable {
                                     @Override
                                     public Observable<MovieCreditsDTO> apply(@NonNull PersonDTO personDTO) throws Exception {
                                         // Subscribe on new thread for immediate requests for each actor
-                                        return PeopleManager.getInstance().getMovieCredits(personDTO.getId()).toObservable().subscribeOn(Schedulers.newThread());
+                                        return PeopleManager.getInstance().getMovieCredits(personDTO.getId())
+                                                .toObservable()
+                                                .subscribeOn(Schedulers.newThread())
+                                                .retry();
                                     }
-                                }).retry().toList().toObservable();
+                                }).toList().toObservable();
                     }
                 });
 
@@ -142,7 +144,6 @@ public class ActorListFragment extends Fragment implements ITaggable {
                 creditsStream.zipWith(searchStream, new BiFunction<List<MovieCreditsDTO>, ActorSearchResponseDTO, ActorSearchResponseDTO>() {
                     @Override
                     public ActorSearchResponseDTO apply(@NonNull final List<MovieCreditsDTO> movieCreditsDTOs, @NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        // TODO: Convert to stream because everything is a stream
                         ArrayList<PersonDTO> filtered = new ArrayList<>();
                         for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
                             boolean found = false;
@@ -154,7 +155,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                                 }
                             }
 
-                            if (found)
+                            if (found || movieCreditsDTOs.isEmpty())
                                 filtered.add(personDTO);
                         }
                         actorSearchResponseDTO.setActors(filtered);

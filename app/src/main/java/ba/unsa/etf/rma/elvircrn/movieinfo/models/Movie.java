@@ -3,8 +3,6 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +24,26 @@ public class Movie implements Parcelable {
     private List<String> originCountry = null;
     private String name;
     private String originalName;
+
+    private List<CastItem> cast;
+
+    public List<CastItem> getCast() {
+        return cast;
+    }
+
+    public void setCast(List<CastItem> cast) {
+        this.cast = cast;
+    }
+
+    public List<CrewItem> getCrew() {
+        return crew;
+    }
+
+    public void setCrew(List<CrewItem> crew) {
+        this.crew = crew;
+    }
+
+    private List<CrewItem> crew;
 
 
     public Boolean getAdult() {

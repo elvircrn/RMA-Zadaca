@@ -7,9 +7,11 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.io.IOException;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.GenreService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.MovieService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.PeopleService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.SearchService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IGenreService;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IMovieService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
 import okhttp3.HttpUrl;
@@ -96,4 +98,9 @@ public class ServiceFactory {
     public IGenreService createGenreService() {
         return new GenreService(BASIC_RETROFIT.create(IGenreService.class));
     }
+
+    public IMovieService createMovieService() {
+        return new MovieService(BASIC_RETROFIT.create(IMovieService.class));
+    }
+
 }
