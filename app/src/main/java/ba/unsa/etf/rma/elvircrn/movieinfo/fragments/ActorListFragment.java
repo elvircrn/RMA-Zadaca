@@ -47,7 +47,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
     Observable<ActorSearchResponseDTO> searchStream;
     Observable<List<MovieCreditsDTO>> creditsStream;
 
-    CompositeDisposable cleanup = new CompositeDisposable();
+    CompositeDisposable subscriberHolder = new CompositeDisposable();
 
 
     public ActorListFragment() {
@@ -92,15 +92,14 @@ public class ActorListFragment extends Fragment implements ITaggable {
 
     public void onDestroy() {
         super.onDestroy();
-        if (cleanup != null)
-            cleanup.dispose();
+        if (subscriberHolder != null)
+            subscriberHolder.dispose();
     }
 
     protected void initSearchView(View view) {
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
         searchStream = RxSearch.fromSearchView(searchView)
-
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(new Predicate<String>() {
                     @Override
@@ -139,7 +138,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                 });
 
 
-        cleanup.add(
+        subscriberHolder.add(
                 creditsStream.zipWith(searchStream, new BiFunction<List<MovieCreditsDTO>, ActorSearchResponseDTO, ActorSearchResponseDTO>() {
                     @Override
                     public ActorSearchResponseDTO apply(@NonNull final List<MovieCreditsDTO> movieCreditsDTOs, @NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
@@ -174,6 +173,14 @@ public class ActorListFragment extends Fragment implements ITaggable {
                         })
         );
 
+    }
+
+    // Subscribers have to be mindful of android's app lifecycle.
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (subscriberHolder != null)
+            subscriberHolder.dispose();
     }
 
     @Override

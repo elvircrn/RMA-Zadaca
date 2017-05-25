@@ -14,12 +14,8 @@ public class PeopleService implements IPeopleService {
         this.service = service;
     }
 
-    public Observable<PersonDTO> getActorById(int id) {
-        return service.getDetails(id);
-    }
-
     @Override
-    public Observable<PersonDTO> getDetails(@Path("person_id") int personId) {
+    public Single<PersonDTO> getDetails(@Path("person_id") int personId) {
         return service.getDetails(personId);
     }
 

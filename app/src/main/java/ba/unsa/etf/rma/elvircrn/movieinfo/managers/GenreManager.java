@@ -3,7 +3,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IGenreService;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public class GenreManager {
     IGenreService service;
@@ -16,7 +16,7 @@ public class GenreManager {
         this.service = ServiceFactory.getInstance().createGenreService();
     }
 
-    public Observable<GenresDTO> getGenres() {
+    public Single<GenresDTO> getGenres() {
         return service.getGenres();
     }
 

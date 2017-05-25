@@ -4,7 +4,6 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class PeopleManager {
@@ -26,7 +25,7 @@ public class PeopleManager {
         return service.getMovieCredits(personId);
     }
 
-    public Observable<PersonDTO> getDetails(int personId) {
+    public Single<PersonDTO> getDetails(int personId) {
         return service.getDetails(personId);
     }
 }

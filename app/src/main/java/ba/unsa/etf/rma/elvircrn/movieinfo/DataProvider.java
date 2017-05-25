@@ -39,7 +39,7 @@ public class DataProvider {
         this.selectedGenres = selectedGenres;
     }
 
-    private ArrayList<Genre> selectedGenres;
+    private ArrayList<Genre> selectedGenres = new ArrayList<>();
 
 
     public ArrayList<Genre> getGenres() {

@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import org.reactivestreams.Subscriber;
+
 import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
@@ -19,11 +21,16 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ButtonsFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
+import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.GenreManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenreDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
     /**
@@ -57,28 +64,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
 
         initFragments(savedInstanceState != null);
         initSearch();
-/*
-        GenreManager.getInstance().getGenres()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .retry()
-                .subscribe(new Subscriber<GenresDTO>() {
-                    @Override
-                    public void onCompleted() {
 
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(GenresDTO genresDTO) {
-                        DataProvider.getInstance().setGenres(GenreMapper.toGenres(genresDTO));
-                        unsubscribe();
-                    }
-                });*/
     }
 
     protected void initSearch() {
