@@ -14,6 +14,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IGenreService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IMovieService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IPeopleService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
+import okhttp3.Cache;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -27,6 +28,8 @@ public class ServiceFactory {
     private static final String API_KEY = "98616f6ba5eb339bef15a7d426f2897a";
     private final OkHttpClient SEARCH_CLIENT, BASIC_CLIENT;
     private final Retrofit SEARCH_RETROFIT, BASIC_RETROFIT;
+    // private final Cache CACHE;
+    private final int CACHE_SIZE = 10 * 1024 * 1024;
 
     private ServiceFactory() {
         SEARCH_CLIENT = new OkHttpClient

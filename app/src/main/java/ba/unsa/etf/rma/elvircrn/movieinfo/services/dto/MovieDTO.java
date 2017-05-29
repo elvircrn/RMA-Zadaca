@@ -65,6 +65,18 @@ public class MovieDTO {
     @Expose
     private String originalName;
 
+    public List<GenreDTO> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<GenreDTO> genres) {
+        this.genres = genres;
+    }
+
+    @SerializedName("genres")
+    @Expose
+    private List<GenreDTO> genres;
+
     public Object getPosterPath() {
         return posterPath;
     }

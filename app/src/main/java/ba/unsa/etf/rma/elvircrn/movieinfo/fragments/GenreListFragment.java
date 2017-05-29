@@ -15,6 +15,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 
 public class GenreListFragment extends Fragment implements ITaggable {
     RecyclerView recyclerView;
+    GenreAdapter genreAdapter;
 
     private static final String FRAGMENT_TAG = "genreListFragment";
 
@@ -45,8 +46,9 @@ public class GenreListFragment extends Fragment implements ITaggable {
     }
 
     protected void populateGenres() {
-        RecyclerViewHelpers.initializeRecyclerView(recyclerView,
-                new GenreAdapter(DataProvider.getInstance().getSelectedGenres()));
+        genreAdapter = new GenreAdapter(DataProvider.getInstance().getSelectedGenres());
+        RecyclerViewHelpers.initializeRecyclerView(recyclerView, genreAdapter);
+        genreAdapter.notifyDataSetChanged();
     }
 
     @Override

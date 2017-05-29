@@ -7,8 +7,10 @@ import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
 public class RxSearch {
-    public static Observable<String> fromSearchView(@NonNull final SearchView searchView) {
-        final BehaviorSubject<String> subject = BehaviorSubject.create();
+    public static Observable<String> fromSearchView(@NonNull final SearchView searchView, String initialSearch) {
+        final BehaviorSubject<String> subject = (initialSearch != null && !initialSearch.isEmpty())
+                ? BehaviorSubject.createDefault(initialSearch)
+                : BehaviorSubject.<String>create();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

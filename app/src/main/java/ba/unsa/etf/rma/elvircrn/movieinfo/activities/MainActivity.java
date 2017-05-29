@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         fm.executePendingTransactions();
 
 
-        if (getCurrentLayout() == LayoutMode.WIDE) {
+        if (getCurrentLayout() == LayoutMode.WIDE && !DataProvider.getInstance().getActors().isEmpty()) {
             this.setSingleFragment(BiographyFragment.class,
                     R.id.frame2, BiographyFragment.getTypeFragmentTag(),
                     false, null, BiographyFragment.getActorParamTag(),

@@ -5,6 +5,7 @@ import java.util.List;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.CrewItem;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CastItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
 
@@ -19,6 +20,23 @@ public class MovieMapper {
         movie.setFirstAirDate(movieDTO.getFirstAirDate());
         movie.setId(movieDTO.getId());
         return movie;
+    }
+
+    public static Movie toMovie(CastItemDTO castItemDTO) {
+        Movie movie = new Movie();
+        movie.setId(castItemDTO.getId());
+        movie.setName(castItemDTO.getTitle());
+        movie.setReleaseDate(castItemDTO.getReleaseDate());
+        return movie;
+    }
+
+    public static List<Movie> toMovieList(List<CastItemDTO> castItemDTOs) {
+        List<Movie> movies = new ArrayList<>();
+        if (castItemDTOs == null || castItemDTOs.isEmpty())
+            return movies;
+        for (CastItemDTO castItemDTO : castItemDTOs)
+            movies.add(toMovie(castItemDTO));
+        return movies;
     }
 
     public static List<CrewItem> toCrewItems(List<CrewItemDTO> crewItemDTOs) {

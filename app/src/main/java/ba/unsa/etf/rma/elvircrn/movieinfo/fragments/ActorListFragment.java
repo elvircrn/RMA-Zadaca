@@ -20,23 +20,18 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
-import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
@@ -72,6 +67,11 @@ public class ActorListFragment extends Fragment implements ITaggable {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        if (searchView.getQuery() != null && !searchView.getQuery().toString().isEmpty())
+            savedInstanceState.putString("Search", searchView.getQuery().toString());
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -86,7 +86,12 @@ public class ActorListFragment extends Fragment implements ITaggable {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.actor_list_fragment, container, false);
-        initSearchView(view);
+        if (savedInstanceState != null && savedInstanceState.containsKey("Search") &&
+                savedInstanceState.get("Search") != null){
+            initSearchView(view, savedInstanceState.get("Search").toString());
+        } else {
+            initSearchView(view, null);
+        }
         return view;
     }
 
@@ -96,10 +101,10 @@ public class ActorListFragment extends Fragment implements ITaggable {
             subscriberHolder.dispose();
     }
 
-    protected void initSearchView(View view) {
+    protected void initSearchView(View view, String initText) {
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
-        searchStream = RxSearch.fromSearchView(searchView)
+        RxSearch.fromSearchView(searchView, initText)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(new Predicate<String>() {
                     @Override
@@ -117,70 +122,17 @@ public class ActorListFragment extends Fragment implements ITaggable {
                             }
                         }).toObservable().retry();
                     }
-                });
-                /*.compose(Rx.<ActorSearchResponseDTO>applySchedulers())
+                })
+                .compose(Rx.<ActorSearchResponseDTO>applySchedulers())
                 .subscribe(new Consumer<ActorSearchResponseDTO>() {
                     @Override
                     public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-
-                    }
-                })*/
-
-        creditsStream = searchStream
-                .compose(Rx.<ActorSearchResponseDTO>applyError())
-                .switchMap(new Function<ActorSearchResponseDTO, ObservableSource<List<MovieCreditsDTO>>>() {
-                    @Override
-                    public ObservableSource<List<MovieCreditsDTO>> apply(@NonNull final ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        return Observable.fromIterable(actorSearchResponseDTO.getActors())
-                                // Since the order is not relevant in this context, use flatMap
-                                .flatMap(new Function<PersonDTO, Observable<MovieCreditsDTO>>() {
-                                    @Override
-                                    public Observable<MovieCreditsDTO> apply(@NonNull PersonDTO personDTO) throws Exception {
-                                        // Subscribe on new thread for immediate requests for each actor
-                                        return PeopleManager.getInstance().getMovieCredits(personDTO.getId())
-                                                .toObservable()
-                                                .subscribeOn(Schedulers.newThread())
-                                                .retry();
-                                    }
-                                }).toList().toObservable();
+                        ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                        actorAdapter.setActors(actors);
+                        DataProvider.getInstance().setActors(actors);
+                        actorAdapter.notifyDataSetChanged();
                     }
                 });
-
-
-        subscriberHolder.add(
-                creditsStream.zipWith(searchStream, new BiFunction<List<MovieCreditsDTO>, ActorSearchResponseDTO, ActorSearchResponseDTO>() {
-                    @Override
-                    public ActorSearchResponseDTO apply(@NonNull final List<MovieCreditsDTO> movieCreditsDTOs, @NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        ArrayList<PersonDTO> filtered = new ArrayList<>();
-                        for (PersonDTO personDTO : actorSearchResponseDTO.getActors()) {
-                            boolean found = false;
-                            for (MovieCreditsDTO movieCreditDTO : movieCreditsDTOs) {
-                                if (personDTO.getId().equals(movieCreditDTO.getId()) &&
-                                        movieCreditDTO.getCast() != null) {
-                                    found = true;
-                                    break;
-                                }
-                            }
-
-                            if (found || movieCreditsDTOs.isEmpty())
-                                filtered.add(personDTO);
-                        }
-                        actorSearchResponseDTO.setActors(filtered);
-                        return actorSearchResponseDTO;
-                    }
-                })
-                        .compose(Rx.<ActorSearchResponseDTO>applySchedulers())
-                        .subscribe(new Consumer<ActorSearchResponseDTO>() {
-                            @Override
-                            public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                                ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
-                                actorAdapter.setActors(actors);
-                                DataProvider.getInstance().setActors(actors);
-                                actorAdapter.notifyDataSetChanged();
-                            }
-                        })
-        );
-
     }
 
     // Subscribers have to be mindful of android's app lifecycle.
@@ -201,12 +153,6 @@ public class ActorListFragment extends Fragment implements ITaggable {
         super.onResume();
     }
 
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-    }
-
-    // TODO: Inject ActorAdapter
     protected void populateActors() {
         if (mListener == null) {
             mListener = new ItemClickSupport.OnItemClickListener() {

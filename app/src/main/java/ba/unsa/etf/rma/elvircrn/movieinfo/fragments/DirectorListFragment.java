@@ -15,6 +15,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 
 public class DirectorListFragment extends Fragment implements ITaggable {
     RecyclerView recyclerView;
+    DirectorAdapter directorAdapter;
 
     private static final String FRAGMENT_TAG = "directorListFragment";
 
@@ -36,8 +37,8 @@ public class DirectorListFragment extends Fragment implements ITaggable {
 
 
     protected void populateDirectors() {
-        RecyclerViewHelpers.initializeRecyclerView(recyclerView,
-                new DirectorAdapter(DataProvider.getInstance().getDirectors()));
+        directorAdapter = new DirectorAdapter(DataProvider.getInstance().getDirectors());
+        RecyclerViewHelpers.initializeRecyclerView(recyclerView, directorAdapter);
     }
 
     @Override
