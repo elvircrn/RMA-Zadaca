@@ -241,7 +241,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
                                 return new Object();
                             }
                         })
-                        .retry(5)
+                        .retry()
                         .compose(Rx.applySchedulers())
                         .take(1)
                         .subscribe()

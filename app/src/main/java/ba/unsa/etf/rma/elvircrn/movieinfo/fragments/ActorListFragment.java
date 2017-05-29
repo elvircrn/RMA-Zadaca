@@ -124,6 +124,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     }
                 })
                 .compose(Rx.<ActorSearchResponseDTO>applySchedulers())
+                .retry()
                 .subscribe(new Consumer<ActorSearchResponseDTO>() {
                     @Override
                     public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
