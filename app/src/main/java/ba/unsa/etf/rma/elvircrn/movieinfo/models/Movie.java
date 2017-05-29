@@ -183,6 +183,9 @@ public class Movie implements Parcelable {
         this.originalName = originalName;
     }
 
+    public Movie() {
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -207,9 +210,8 @@ public class Movie implements Parcelable {
         dest.writeStringList(this.originCountry);
         dest.writeString(this.name);
         dest.writeString(this.originalName);
-    }
-
-    public Movie() {
+        dest.writeList(this.cast);
+        dest.writeList(this.crew);
     }
 
     protected Movie(Parcel in) {
@@ -231,9 +233,13 @@ public class Movie implements Parcelable {
         this.originCountry = in.createStringArrayList();
         this.name = in.readString();
         this.originalName = in.readString();
+        this.cast = new ArrayList<CastItem>();
+        in.readList(this.cast, List.class.getClassLoader());
+        this.crew = new ArrayList<CrewItem>();
+        in.readList(this.crew, List.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
         public Movie createFromParcel(Parcel source) {
             return new Movie(source);
         }

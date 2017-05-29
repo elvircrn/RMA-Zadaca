@@ -129,7 +129,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
     public void setActor(Actor actor) {
         this.actor = actor;
         binding.setActor(actor);
-
         Observable<List<MovieCreditsDTO>> creditsStream = Observable.fromIterable(actor.getMovies())
                 .flatMap(new Function<Movie, ObservableSource<MovieCreditsDTO>>() {
                     @Override
@@ -148,11 +147,16 @@ public class BiographyFragment extends Fragment implements ITaggable {
                     Observable.zip(GenreManager.getInstance().getGenres().toObservable(),
                             PeopleManager.getInstance().getDetails(actor.getId()).toObservable(),
                             creditsStream,
-                            new Function3<GenresDTO, PersonDTO, List<MovieCreditsDTO>, Void>() {
+                            new Function3<GenresDTO, PersonDTO, List<MovieCreditsDTO>, Object>() {
 
                                 @Override
-                                public Void apply(@NonNull GenresDTO genresDTO, @NonNull PersonDTO personDTO, @NonNull List<MovieCreditsDTO> credits) throws Exception {
+                                public Object apply(@NonNull GenresDTO genresDTO, @NonNull PersonDTO personDTO, @NonNull List<MovieCreditsDTO> credits) throws Exception {
                                     BiographyFragment.this.actor = PersonMapper.toActorFromActor(BiographyFragment.this.actor, personDTO);
+
+                                    // TODO: Implement
+
+                                    BiographyFragment.this.actor.getMovies().clear();
+
                                     binding.setActor(BiographyFragment.this.actor);
                                     ArrayList<Integer> genreIds = new ArrayList<>();
                                     ArrayList<Genre> genres = new ArrayList<>();
@@ -188,8 +192,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
                                                         if (DataProvider.getInstance().getDirectors().size() == 7)
                                                             break;
 
-                                                        if (!Objects.equals(crewItem.getJob(), DIRECTOR_ROLE) ||
-                                                                DataProvider.getInstance().getDirectors().contains(crewItem.getId()))
+                                                        if (!Objects.equals(crewItem.getJob(), DIRECTOR_ROLE))
                                                             continue;
 
                                                         boolean found = false;
@@ -197,15 +200,14 @@ public class BiographyFragment extends Fragment implements ITaggable {
                                                             if (director.getId() == crewItem.getId())
                                                                 found = true;
 
-                                                        directorIds.add(crewItem.getId());
-
                                                         if (!found)
                                                             DataProvider.getInstance().getDirectors().add(new Director(crewItem.getId(), crewItem.getName(), ""));
                                                     }
-                                    return null;
+
+                                    return new Object();
                                 }
                             })
-                            .compose(Rx.<Void>applySchedulers())
+                            .compose(Rx.applySchedulers())
                             .subscribe()
             );
         } else {

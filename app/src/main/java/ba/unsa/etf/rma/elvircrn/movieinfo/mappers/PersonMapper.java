@@ -42,7 +42,10 @@ public class PersonMapper {
             Collections.sort(actor.getMovies(), new Comparator<Movie>() {
                 @Override
                 public int compare(Movie o1, Movie o2) {
-                    return o2.getFirstAirDate().compareTo(o1.getFirstAirDate());
+                    if (o1.getReleaseDate() == null ||
+                            o2.getReleaseDate() == null)
+                        return 0;
+                    return o2.getReleaseDate().compareTo(o1.getReleaseDate());
                 }
             });
         }

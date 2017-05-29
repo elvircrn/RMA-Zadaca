@@ -207,7 +207,7 @@ public class Actor implements Parcelable {
         dest.writeString(this.imdbLink);
         dest.writeString(this.imgUrl);
         dest.writeInt(this.id);
-        dest.writeTypedList(this.movies);
+        dest.writeTypedList(movies);
     }
 
     protected Actor(Parcel in) {

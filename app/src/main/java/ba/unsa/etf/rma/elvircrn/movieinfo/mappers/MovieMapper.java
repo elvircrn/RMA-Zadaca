@@ -11,9 +11,13 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
 public class MovieMapper {
     public static Movie toMovie(MovieDTO movieDTO) {
         Movie movie = new Movie();
-        // TODO: Finish mapping
+        movie.setAdult(movieDTO.getAdult());
         movie.setGenreIds(movieDTO.getGenreIds());
-
+        movie.setOverview(movieDTO.getOverview());
+        movie.setOriginalTitle(movieDTO.getOriginalTitle());
+        movie.setReleaseDate(movieDTO.getReleaseDate());
+        movie.setFirstAirDate(movieDTO.getFirstAirDate());
+        movie.setId(movieDTO.getId());
         return movie;
     }
 

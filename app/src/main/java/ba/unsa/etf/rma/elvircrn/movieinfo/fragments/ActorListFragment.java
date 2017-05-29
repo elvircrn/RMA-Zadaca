@@ -118,6 +118,13 @@ public class ActorListFragment extends Fragment implements ITaggable {
                         }).toObservable().retry();
                     }
                 });
+                /*.compose(Rx.<ActorSearchResponseDTO>applySchedulers())
+                .subscribe(new Consumer<ActorSearchResponseDTO>() {
+                    @Override
+                    public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+
+                    }
+                })*/
 
         creditsStream = searchStream
                 .compose(Rx.<ActorSearchResponseDTO>applyError())
