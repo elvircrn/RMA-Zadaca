@@ -44,7 +44,7 @@ public class ServiceFactory {
                                 .addQueryParameter("language", "en-US")
                                 .build();
                         request = request.newBuilder().url(url).build();
-                        Log.d("Http request url: ", request.url().toString());
+                        // Log.d("Http request url: ", request.url().toString());
                         return chain.proceed(request);
                     }
                 })
@@ -60,7 +60,7 @@ public class ServiceFactory {
                                 .addQueryParameter("api_key", API_KEY)
                                 .build();
                         request = request.newBuilder().url(url).build();
-                        Log.d("Http request url: ", request.url().toString());
+                        // Log.d("Http request url: ", request.url().toString());
                         return chain.proceed(request);
                     }
                 })
