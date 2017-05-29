@@ -1,3 +1,8 @@
+![some caption](everything.jpg)
+
+
+
+
 # Vazna napomena!
 Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 2d09483 predstavlja prvu spiralu, dok najaktuelniji commit predstavlja drugu spiralu.
 
@@ -23,9 +28,7 @@ Mislio sam da bi bilo vise cool implementirati sistem u kojem korisnik pise teks
 
 Ovo je uklonjeno zbog prevelikog generisanja requestova koji bi potencijalno mogli popuniti request cap TheMovieDb (moguce je vidjeti ovu funkcionalnost povratkom na neki od prethodnih commitova prije 29.5.2017).
 
-Takodje, posto people search ne vraca detaljne informacije u glumcima, to ce lista glumaca biti populirana incijalno samo sa podacima o imenu i ratingu jer su to jedini dostupni podaci. Primjeticete da kada user izabere nekog glumca, na listi glumaca ce se pojaviti njegovi detalji. Ovaj efekat je posljedica data bindinga kojeg sam odlucio otaviti jer mi se cinio cool (iako sam samo mogao izbrisati polja za datum rodjenja i sl.).
-
-Napominjem da se svi subscriptioni gase kada odgovarajuci fragmenti odu u background.
+Takodje, posto people search ne vraca detaljne informacije u glumcima, to ce lista glumaca biti populirana incijalno samo sa podacima o imenu i ratingu jer su to jedini dostupni podaci.
 
 ## Zadatak 2
 
