@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="actor"
             type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor" />
-
         <import type="ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor.Gender" />
-
         <import type="ba.unsa.etf.rma.elvircrn.movieinfo.R" />
-
     </data>
 
     <ScrollView
@@ -130,6 +127,16 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_marginTop="16dp" />
+
+            <CheckBox
+                android:id="@+id/bookmarkedCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="102dp"
+                android:text="Bukmarkovano"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imdbButton" />
 
         </android.support.constraint.ConstraintLayout>
 

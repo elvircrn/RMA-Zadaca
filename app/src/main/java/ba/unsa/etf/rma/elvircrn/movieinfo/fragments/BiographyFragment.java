@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.PersonDTO;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
@@ -47,6 +50,9 @@ import static ba.unsa.etf.rma.elvircrn.movieinfo.mappers.DirectorMapper.DIRECTOR
 
 public class BiographyFragment extends Fragment implements ITaggable {
     private final static String ACTOR_PARAM_TAG = "PersonDTO";
+
+    @BindView(R.id.bookmarkedCheckBox)
+    CheckBox bookmarked;
 
     public static String getActorParamTag() {
         return ACTOR_PARAM_TAG;
@@ -69,6 +75,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
+
+        ButterKnife.bind(this, binding.getRoot());
 
         if (getArguments().containsKey(getActorParamTag())) {
             setActor((Actor) getArguments().get(getActorParamTag()));
@@ -138,6 +146,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
         if (this.actor.getId() == actor.getId())
             return;
 
+        bookmarked.setEnabled(false);
         this.actor = actor;
         binding.setActor(actor);
 
@@ -238,6 +247,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
                                 DataProvider.getInstance().setGenres(genres);
                                 DataProvider.getInstance().setDirectors(directors);
 
+                                bookmarked.setEnabled(true);
+
                                 return new Object();
                             }
                         })
@@ -245,8 +256,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
                         .compose(Rx.applySchedulers())
                         .take(1)
                         .subscribe()
-        );
 
+        );
 
     }
 

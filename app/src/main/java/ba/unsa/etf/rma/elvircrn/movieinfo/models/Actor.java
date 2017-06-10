@@ -1,6 +1,9 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
