@@ -18,7 +18,9 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 @Entity
 public class Actor implements Parcelable {
+    @Ignore
     public static final String IMDB_BASE = "http://www.imdb.com/name/";
+    @Ignore
     public static final String IMAGE_BASE = "https://image.tmdb.org/t/p/w500/";
 
     public String getGodinaFormatted() {
@@ -101,6 +103,8 @@ public class Actor implements Parcelable {
     @ColumnInfo(name = "img_url")
     private String imgUrl;
     @PrimaryKey
+    @ColumnInfo(name = "id")
+
     private int  id;
     @Ignore
     private List<Movie> movies;
@@ -243,6 +247,7 @@ public class Actor implements Parcelable {
         dest.writeTypedList(movies);
     }
 
+    @Ignore
     protected Actor(Parcel in) {
         this.name = in.readString();
         this.surname = in.readString();
@@ -259,6 +264,7 @@ public class Actor implements Parcelable {
         this.movies = in.createTypedArrayList(Movie.CREATOR);
     }
 
+    @Ignore
     public static final Creator<Actor> CREATOR = new Creator<Actor>() {
         public Actor createFromParcel(Parcel source) {
             return new Actor(source);

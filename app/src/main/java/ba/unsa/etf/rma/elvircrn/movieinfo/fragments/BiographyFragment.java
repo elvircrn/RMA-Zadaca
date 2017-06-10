@@ -19,7 +19,7 @@ import java.util.Objects;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
-import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.*;
+import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.MovieManager;
@@ -41,6 +41,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
@@ -76,6 +77,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
 
         ButterKnife.bind(this, binding.getRoot());
+
+        bookmarked.setEnabled(false);
 
         if (getArguments().containsKey(getActorParamTag())) {
             setActor((Actor) getArguments().get(getActorParamTag()));
@@ -115,8 +118,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
                 i.putExtra(Intent.EXTRA_TEXT, actor.getBiography());
                 i.setType("text/plain");
 
-                // Provjera da li uopste postoji app koji podrzava ovu vrstu intenta. resolveActivity()
-                // vraca null za slucaj da ne postoji.
                 if (i.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(i);
                 }
@@ -130,6 +131,20 @@ public class BiographyFragment extends Fragment implements ITaggable {
             savedInstanceState.putParcelable(getActorParamTag(), actor);
     }
 
+    // https://stackoverflow.com/a/44220673/1192513
+    void initBookmark() {
+        DataProvider.getInstance().getDb().actorDAO().findById(actor.getId())
+                .toObservable()
+                .take(1)
+                .compose(Rx.<List<Actor>>applyDbSchedulers())
+                .subscribe(new Consumer<List<Actor>>() {
+                    @Override
+                    public void accept(List<Actor> actor) throws Exception {
+                        int x = 2;
+                        bookmarked.setEnabled(true);
+                    }
+                });
+    }
 
     @Override
     public String toString() {
@@ -145,7 +160,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
         if (this.actor.getId() == actor.getId())
             return;
 
-        bookmarked.setEnabled(false);
+        initBookmark();
+
         this.actor = actor;
         binding.setActor(actor);
 
@@ -211,7 +227,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
                                 binding.getActor().setMovies(MovieMapper.toMovies(movieDTOs));
                                 binding.notifyChange();
 
-
                                 ArrayList<Genre> genres = DataProvider.getInstance().getSelectedGenres();
                                 ArrayList<Director> directors = DataProvider.getInstance().getDirectors();
                                 DataProvider.getInstance().getSelectedGenres().clear();
@@ -245,8 +260,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
                                 DataProvider.getInstance().setGenres(genres);
                                 DataProvider.getInstance().setDirectors(directors);
-
-                                bookmarked.setEnabled(true);
 
                                 return new Object();
                             }

@@ -22,6 +22,9 @@ public interface ActorDAO {
             + "surname LIKE :last LIMIT 1")
     Flowable<Actor> findByName(String first, String last);
 
+    @Query("SELECT * FROM actor WHERE id = (:id)")
+    Flowable<List<Actor>> findById(int id);
+
     @Insert
     void insertAll(Actor... actors);
 

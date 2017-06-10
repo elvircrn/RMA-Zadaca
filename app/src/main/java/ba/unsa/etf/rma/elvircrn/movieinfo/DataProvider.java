@@ -3,12 +3,16 @@ package ba.unsa.etf.rma.elvircrn.movieinfo;
 
 import java.util.ArrayList;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.AppDatabase;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.DatabaseFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 
 public class DataProvider {
     private static DataProvider instance = null;
+
+    private AppDatabase db;
 
     public ArrayList<Actor> getActors() {
         return actors;
@@ -57,10 +61,18 @@ public class DataProvider {
         genres = new ArrayList<>();
     }
 
+    public static void initDatabase(AppDatabase db) {
+        getInstance().db = db;
+    }
+
     public static DataProvider getInstance() {
         if (instance == null)
             instance = new DataProvider();
         return instance;
+    }
+
+    public AppDatabase getDb() {
+        return db;
     }
 
     private void clear() {
