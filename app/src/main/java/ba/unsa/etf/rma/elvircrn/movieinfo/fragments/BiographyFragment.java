@@ -44,6 +44,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 import static ba.unsa.etf.rma.elvircrn.movieinfo.mappers.DirectorMapper.DIRECTOR_ROLE;
@@ -166,12 +167,10 @@ public class BiographyFragment extends Fragment implements ITaggable {
     }
 
     public void setActor(Actor actor) {
-        if (this.actor.getId() == actor.getId())
-            return;
-
 
         this.actor = actor;
         binding.setActor(actor);
+        binding.notifyChange();
 
         Observable<MovieCreditsDTO> creditsStream = PeopleManager.getInstance().getMovieCredits(actor.getId()).retry().toObservable().take(1);
 
@@ -277,20 +276,35 @@ public class BiographyFragment extends Fragment implements ITaggable {
                 .take(1);
 
 
-        DataProvider.getInstance().getDb().actorDAO().findById(actor.getId())
+        Observable<List<Actor>> actorsDbStream = DataProvider.getInstance().getDb().actorDAO().findById(actor.getId())
                 .toObservable()
-                .take(1)
-                .compose(Rx.<List<Actor>>applySchedulers())
-                .subscribe(new Consumer<List<Actor>>() {
+                .compose(Rx.<List<Actor>>applySchedulers());
+
+        Observable<Actor> actorDbStream = actorsDbStream.map(new Function<List<Actor>, Actor>() {
                     @Override
-                    public void accept(@NonNull List<Actor> actors) throws Exception {
+                    public Actor apply(@NonNull List<Actor> actors) throws Exception {
                         bookmarked.setEnabled(true);
                         bookmarked.setChecked(!actors.isEmpty());
+
+                        if (actors.isEmpty()) {
+                            Actor actor = new Actor();
+                            actor.setId(-1);
+                            return actor;
+                        }
+                        else
+                            return actors.get(0);
                     }
                 });
 
-
-        actorService.compose(Rx.<Actor>applySchedulers())
+        Observable.merge(actorDbStream, actorService)
+                .compose(Rx.<Actor>applySchedulers())
+                .filter(new Predicate<Actor>() {
+                    @Override
+                    public boolean test(@NonNull Actor actor) throws Exception {
+                        return actor.getId() != -1;
+                    }
+                })
+                .take(1)
                 .subscribe(new Consumer<Actor>() {
                     @Override
                     public void accept(@NonNull Actor actor) throws Exception {

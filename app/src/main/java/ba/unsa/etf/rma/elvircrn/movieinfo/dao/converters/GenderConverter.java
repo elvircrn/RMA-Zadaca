@@ -2,20 +2,13 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.dao.converters;
 
 import android.arch.persistence.room.TypeConverter;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 
 public class GenderConverter {
     @TypeConverter
     public static int fromGender(Actor.Gender gender) {
-        switch (gender) {
-            case FEMALE:
-                return 0;
-            case MALE:
-                return 1;
-            case NONBINARY:
-                return 2;
-        }
-        return -1;
+        return gender == null ? 0 : gender.ordinal();
     }
 
     @TypeConverter

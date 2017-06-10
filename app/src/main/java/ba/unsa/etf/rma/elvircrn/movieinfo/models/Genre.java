@@ -1,19 +1,37 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
+
 import java.util.TreeMap;
 
+@Entity
 public class Genre {
-    int id;
-    private static String locale;
+    @ColumnInfo(name = "id")
+    @PrimaryKey
+    protected int id;
+    @ColumnInfo(name = "name")
+    protected String name;
 
+    @Ignore
+    protected String imgUrl = "genredefault";
+    @Ignore
+    private static String locale;
+    @Ignore
     private TreeMap<String, String> translations = new TreeMap<>();
 
+    public Genre() { }
+
+    @Ignore
     public Genre(int id, String name, String imgUrl) {
         this.id = id;
         this.name = name;
         this.setImgUrl(imgUrl);
     }
 
+    @Ignore
     public Genre(String name, String imgUrl) {
         this.name = name;
         this.setImgUrl(imgUrl);
@@ -22,8 +40,6 @@ public class Genre {
     public static void setLocale(String locale) {
         Genre.locale = locale;
     }
-
-    protected String name;
 
     public String getName() {
         if (locale != null && locale != "" && translations.containsKey(locale)) {
@@ -53,8 +69,6 @@ public class Genre {
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl.replace(" ", "").toLowerCase();
     }
-
-    protected String imgUrl = "genredefault";
 
     public int getId() {
         return id;
