@@ -12,6 +12,7 @@ import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
+@Entity
 public class Actor implements Parcelable {
     public static final String IMDB_BASE = "http://www.imdb.com/name/";
     public static final String IMAGE_BASE = "https://image.tmdb.org/t/p/w500/";
@@ -64,16 +65,25 @@ public class Actor implements Parcelable {
         this.imdbLink = imdbLink;
     }
 
+    @ColumnInfo(name = "name")
     private String name;
+    @ColumnInfo(name = "surname")
     private String surname = "";
+    @ColumnInfo(name = "place_of_birth")
     private String placeOfBirth;
+    @ColumnInfo(name = "year_of_birth")
     private int yearOfBirth;
+    @ColumnInfo(name = "rating")
     private int rating;
+    @ColumnInfo(name = "year_of_death")
     private int yearOfDeath = -1;
     private Gender gender;
     private String biography;
+    @ColumnInfo(name = "biography")
     private String imdbLink;
+    @ColumnInfo(name = "img_url")
     private String imgUrl;
+    @PrimaryKey
     private int  id;
     private List<Movie> movies;
 
