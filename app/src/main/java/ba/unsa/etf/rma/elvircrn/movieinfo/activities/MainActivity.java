@@ -8,29 +8,30 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
-import org.reactivestreams.Subscriber;
+import com.facebook.stetho.Stetho;
 
+import java.util.List;
 import java.util.Locale;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.AppDatabase;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.DatabaseFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ActorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ButtonsFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
-import ba.unsa.etf.rma.elvircrn.movieinfo.managers.GenreManager;
-import ba.unsa.etf.rma.elvircrn.movieinfo.managers.SearchManager;
-import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenreDTO;
-import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.GenresDTO;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+
 
 public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
     /**
@@ -50,11 +51,15 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         currentLayout = (findViewById(R.id.frame2) == null) ? LayoutMode.NARROW : LayoutMode.WIDE;
     }
 
+    AppDatabase db;
+
     protected LayoutMode currentLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Stetho.initializeWithDefaults(this);
+
 
         String currentLanguage = Locale.getDefault().getDisplayLanguage();
         DataProvider.getInstance().setLocale(currentLanguage);
@@ -65,6 +70,19 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         initFragments(savedInstanceState != null);
         initSearch();
 
+        initDb();
+
+        db.actorDAO().getAll().subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Actor>>() {
+                            @Override
+                            public void accept(@NonNull List<Actor> actors) throws Exception {
+                                Log.d("ses", "ses");
+                            }});
+    }
+
+    protected void initDb() {
+        db = DatabaseFactory.create(getApplicationContext());
     }
 
     protected void initSearch() {

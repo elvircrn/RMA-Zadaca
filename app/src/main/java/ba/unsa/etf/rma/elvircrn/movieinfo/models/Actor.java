@@ -3,13 +3,17 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverter;
+import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.List;
 import java.util.Locale;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.dao.converters.GenderConverter;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 @Entity
@@ -45,6 +49,7 @@ public class Actor implements Parcelable {
 
     public Actor() { }
 
+    @Ignore
     public Actor(String name,
                  String surname,
                  String placeOfBirth,
@@ -77,16 +82,31 @@ public class Actor implements Parcelable {
     private int rating;
     @ColumnInfo(name = "year_of_death")
     private int yearOfDeath = -1;
+    @ColumnInfo(name = "gender")
     private Gender gender;
-    private String biography;
+
     @ColumnInfo(name = "biography")
+    private String biography;
+    @ColumnInfo(name = "imdb_link")
     private String imdbLink;
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     @ColumnInfo(name = "img_url")
     private String imgUrl;
     @PrimaryKey
     private int  id;
+    @Ignore
     private List<Movie> movies;
 
+
+    @Ignore
     public Actor(String name,
                  String surname,
                  String placeOfBirth,

@@ -13,14 +13,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
-import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBinding;
+import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.*;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.MovieManager;

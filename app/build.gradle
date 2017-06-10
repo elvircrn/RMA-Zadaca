@@ -12,6 +12,13 @@ android {
         multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
+
     }
     buildTypes {
         release {
@@ -43,7 +50,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.facebook.stetho:stetho-urlconnection:1.5.0'
+    compile 'com.facebook.stetho:stetho:1.5.0'
 
 
     compile 'com.android.support:appcompat-v7:24.2.1'
