@@ -1,6 +1,5 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -27,14 +26,19 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
+    private static final String DIRECTOR_NAME_QUERY = "director:";
+    private static final String ACTORS_NAME_QUERY   = "actor:";
+
     RecyclerView recyclerView;
     ActorAdapter actorAdapter;
     ItemClickSupport.OnItemClickListener mListener;
@@ -87,7 +91,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.actor_list_fragment, container, false);
         if (savedInstanceState != null && savedInstanceState.containsKey("Search") &&
-                savedInstanceState.get("Search") != null){
+                savedInstanceState.get("Search") != null) {
             initSearchView(view, savedInstanceState.get("Search").toString());
         } else {
             initSearchView(view, null);
@@ -104,39 +108,67 @@ public class ActorListFragment extends Fragment implements ITaggable {
     protected void initSearchView(View view, String initText) {
         searchView = (SearchView) view.findViewById(R.id.searchView);
 
-        RxSearch.fromSearchView(searchView, initText)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(new Predicate<String>() {
-                    @Override
-                    public boolean test(@NonNull String s) throws Exception {
-                        return s.length() > 2;
-                    }
-                })
-                .switchMap(new Function<String, Observable<ActorSearchResponseDTO>>() {
-                    @Override
-                    public Observable<ActorSearchResponseDTO> apply(@NonNull String s) throws Exception {
-                        return SearchManager.getInstance().searchActorByName(s).doOnError(new Consumer<Throwable>() {
+        subscriberHolder.add(
+                RxSearch.fromSearchView(searchView, initText)
+                        .debounce(300, TimeUnit.MILLISECONDS)
+                        .filter(new Predicate<String>() {
                             @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
+                            public boolean test(@NonNull String s) throws Exception {
+                                return s.length() > 2;
                             }
-                        }).toObservable().retry();
-                    }
-                })
-                .compose(Rx.<ActorSearchResponseDTO>applySchedulers())
-                .retry()
-                .subscribe(new Consumer<ActorSearchResponseDTO>() {
-                    @Override
-                    public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
-                        actorAdapter.setActors(actors);
-                        DataProvider.getInstance().setActors(actors);
-                        actorAdapter.notifyDataSetChanged();
-                    }
-                });
+                        })
+                        .switchMap(new Function<String, ObservableSource<ArrayList<Actor>>>() {
+                            @Override
+                            public ObservableSource<ArrayList<Actor>> apply(@NonNull String s) throws Exception {
+                                if (s.startsWith(ACTORS_NAME_QUERY)) {
+                                    String query = s.substring(ACTORS_NAME_QUERY.length());
+                                    return DataProvider.getInstance().getDb().actorDAO().findByName(query).toObservable()
+                                            .observeOn(Schedulers.newThread())
+                                            .map(new Function<List<Actor>, ArrayList<Actor>>() {
+                                                @Override
+                                                public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                                                    return new ArrayList<>(actors);
+                                                }
+                                            });
+                                } else if (s.startsWith(DIRECTOR_NAME_QUERY)) {
+                                    return DataProvider.getInstance().getDb().actorDAO().findByName(s.substring(DIRECTOR_NAME_QUERY.length() - 1)).toObservable()
+                                            .observeOn(Schedulers.newThread())
+                                            .map(new Function<List<Actor>, ArrayList<Actor>>() {
+                                                @Override
+                                                public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                                                    return new ArrayList<>(actors);
+                                                }
+                                            });
+                                } else {
+                                    return SearchManager.getInstance().searchActorByName(s).doOnError(new Consumer<Throwable>() {
+                                        @Override
+                                        public void accept(@NonNull Throwable throwable) throws Exception {
+                                            throwable.printStackTrace();
+                                        }
+                                    }).toObservable().retry()
+                                            .map(new Function<ActorSearchResponseDTO, ArrayList<Actor>>() {
+                                                @Override
+                                                public ArrayList<Actor> apply(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                                                    return PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                                                }
+                                            });
+                                }
+                            }
+                        })
+                        .compose(Rx.<ArrayList<Actor>>applySchedulers())
+                        .subscribe(new Consumer<ArrayList<Actor>>() {
+                            @Override
+                            public void accept(@NonNull ArrayList<Actor> actors) throws Exception {
+                                actorAdapter.setActors(actors);
+                                actorAdapter.notifyDataSetChanged();
+
+                                DataProvider.getInstance().setActors(actors);
+                            }
+                        })
+        );
     }
 
-    // Subscribers have to be mindful of android's app lifecycle.
+    // Subscribers have to be mindful of Android's app lifecycle.
     @Override
     public void onPause() {
         super.onPause();

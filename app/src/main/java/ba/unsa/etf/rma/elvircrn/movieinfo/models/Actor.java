@@ -4,12 +4,15 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,7 +52,10 @@ public class Actor implements Parcelable {
 
     public enum Gender { NONBINARY, FEMALE, MALE };
 
-    public Actor() { }
+    public Actor() {
+        genres = new ArrayList<>();
+        directors = new ArrayList<>();
+    }
 
     @Ignore
     public Actor(String name,
@@ -61,6 +67,8 @@ public class Actor implements Parcelable {
                  Gender gender,
                  String biography,
                  String imdbLink) {
+        super();
+
         this.name = name;
         this.surname = surname;
         this.placeOfBirth = placeOfBirth;
@@ -86,11 +94,21 @@ public class Actor implements Parcelable {
     private int yearOfDeath = -1;
     @ColumnInfo(name = "gender")
     private Gender gender;
-
     @ColumnInfo(name = "biography")
     private String biography;
     @ColumnInfo(name = "imdb_link")
     private String imdbLink;
+    @ColumnInfo(name = "img_url")
+    private String imgUrl;
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    private int  id;
+    @Ignore
+    private List<Movie> movies;
+    @Ignore
+    private List<Genre> genres;
+    @Ignore
+    private List<Director> directors;
 
     public String getImgUrl() {
         return imgUrl;
@@ -100,15 +118,22 @@ public class Actor implements Parcelable {
         this.imgUrl = imgUrl;
     }
 
-    @ColumnInfo(name = "img_url")
-    private String imgUrl;
-    @PrimaryKey
-    @ColumnInfo(name = "id")
 
-    private int  id;
-    @Ignore
-    private List<Movie> movies;
+    public List<Genre> getGenres() {
+        return genres;
+    }
 
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public List<Director> getDirectors() {
+        return directors;
+    }
+
+    public void setDirectors(List<Director> directors) {
+        this.directors = directors;
+    }
 
     @Ignore
     public Actor(String name,

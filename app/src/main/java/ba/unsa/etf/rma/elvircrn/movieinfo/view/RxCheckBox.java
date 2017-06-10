@@ -21,4 +21,16 @@ public class RxCheckBox {
 
         return subject;
     }
+
+    public static Observable<Boolean> fromCheckBox(@NonNull final CheckBox checkBox) {
+        final BehaviorSubject<Boolean> subject = BehaviorSubject.create();
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                subject.onNext(isChecked);
+            }
+        });
+        return subject;
+    }
+
 }
