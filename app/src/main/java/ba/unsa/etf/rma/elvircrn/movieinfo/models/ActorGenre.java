@@ -2,6 +2,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
@@ -44,10 +45,17 @@ public class ActorGenre {
     }
 
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     private int id;
     @ColumnInfo(name = "actor_id")
+    @ForeignKey(entity = Actor.class,
+            parentColumns = "id",
+            childColumns = "actor_id")
     private int actorId;
     @ColumnInfo(name = "genre_id")
+    @ForeignKey(entity = Genre.class,
+            parentColumns = "id",
+            childColumns = "genre_id")
     private int genreId;
 
 }

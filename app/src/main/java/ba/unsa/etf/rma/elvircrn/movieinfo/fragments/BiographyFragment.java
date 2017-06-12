@@ -154,8 +154,6 @@ public class BiographyFragment extends Fragment implements ITaggable {
         );
     }
 
-    // https://stackoverflow.com/a/44220673/1192513
-
     @Override
     public String toString() {
         return FRAGMENT_TAG;

@@ -1,7 +1,5 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.dao;
 
-import android.provider.ContactsContract;
-
 import java.util.List;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
@@ -12,10 +10,13 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.ActorGenre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function3;
+import io.reactivex.functions.Predicate;
+
 
 public class ActorDbService {
     public static void deleteActor(Actor actor) {
@@ -119,13 +120,54 @@ public class ActorDbService {
 
     public static void addActor(Actor actor) {
         DataProvider.getInstance().getDb().actorDAO().insertAll(actor);
+        DirectorDbService.addDirectors(actor.getDirectors());
+        GenreDbService.addGenres(actor.getGenres());
         for (Genre genre : actor.getGenres()) {
             DataProvider.getInstance().getDb().actorGenreDAO()
-                    .insertAll(new ActorGenre(actor.getId(), genre.getId()));
+                    .insertAll(new ActorGenre(0, actor.getId(), genre.getId()));
         }
         for (Director director : actor.getDirectors()) {
             DataProvider.getInstance().getDb().actorDirectorDAO()
-                    .insertAll(new ActorDirector(actor.getId(), director.getId()));
+                    .insertAll(new ActorDirector(0, actor.getId(), director.getId()));
         }
+    }
+
+    public static Observable<List<Actor>> findByDirectorName(final String directorName) {
+        return DataProvider.getInstance().getDb().actorDAO()
+                .getAll()
+                .toObservable()
+                .compose(Rx.<List<Actor>>applyDbSchedulers())
+                .flatMap(new Function<List<Actor>, Observable<Actor>>() {
+                    @Override
+                    public Observable<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                        return Observable.fromIterable(actors)
+                                .flatMap(new Function<Actor, ObservableSource<Actor>>() {
+                                    @Override
+                                    public ObservableSource<Actor> apply(@NonNull Actor actor) throws Exception {
+                                        return fullActor(actor.getId());
+                                    }
+                                });
+                    }
+                })
+                .toList()
+                .toObservable()
+                .flatMap(new Function<List<Actor>, Observable<Actor>>() {
+                    @Override
+                    public Observable<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                        return Observable.fromIterable(actors);
+                    }
+                })
+                .filter(new Predicate<Actor>() {
+                    @Override
+                    public boolean test(@NonNull Actor actor) throws Exception {
+                        for (Director director : actor.getDirectors()) {
+                            if (director.getName().contains(directorName))
+                                return true;
+                        }
+                        return false;
+                    }
+                })
+                .toList()
+                .toObservable();
     }
 }

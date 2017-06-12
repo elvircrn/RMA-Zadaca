@@ -8,6 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class ActorDirector {
     @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
     private int id;
     @ColumnInfo(name = "actor_id")
     private int actorId;

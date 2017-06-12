@@ -20,7 +20,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
         Director.class,
         ActorGenre.class,
         ActorDirector.class
-}, version = 8)
+}, version = 11)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract ActorDAO actorDAO();
     public abstract GenreDAO genreDAO();
