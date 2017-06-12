@@ -27,6 +27,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.ActorWithGenres;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CastItemDTO;
@@ -276,13 +277,15 @@ public class BiographyFragment extends Fragment implements ITaggable {
                 .take(1);
 
 
-        Observable<List<Actor>> actorsDbStream = DataProvider.getInstance().getDb().actorDAO().findById(actor.getId())
+        Observable<List<ActorWithGenres>> actorsDbStream = DataProvider.getInstance().getDb()
+                .actorGenreDAO()
+                .findActorWithGenresById(actor.getId())
                 .toObservable()
-                .compose(Rx.<List<Actor>>applySchedulers());
+                .compose(Rx.<List<ActorWithGenres>>applySchedulers());
 
-        Observable<Actor> actorDbStream = actorsDbStream.map(new Function<List<Actor>, Actor>() {
+        Observable<Actor> actorDbStream = actorsDbStream.map(new Function<List<ActorWithGenres>, Actor>() {
                     @Override
-                    public Actor apply(@NonNull List<Actor> actors) throws Exception {
+                    public Actor apply(@NonNull List<ActorWithGenres> actors) throws Exception {
                         bookmarked.setEnabled(true);
                         bookmarked.setChecked(!actors.isEmpty());
 
@@ -291,8 +294,10 @@ public class BiographyFragment extends Fragment implements ITaggable {
                             actor.setId(-1);
                             return actor;
                         }
-                        else
-                            return actors.get(0);
+                        else {
+                            // actor = actors.get(0).getActor();
+                            return actors.get(0).actor;
+                        }
                     }
                 });
 
@@ -310,6 +315,8 @@ public class BiographyFragment extends Fragment implements ITaggable {
                     public void accept(@NonNull Actor actor) throws Exception {
                         binding.setActor(actor);
                         binding.notifyChange();
+
+
                     }
                 });
     }

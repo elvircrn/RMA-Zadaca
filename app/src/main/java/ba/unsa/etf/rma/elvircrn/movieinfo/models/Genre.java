@@ -73,4 +73,6 @@ public class Genre {
     public int getId() {
         return id;
     }
+
+    public void setId(int value) { id = value; }
 }

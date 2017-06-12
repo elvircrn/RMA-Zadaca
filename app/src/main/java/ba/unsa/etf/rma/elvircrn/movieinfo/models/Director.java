@@ -4,11 +4,12 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 
 @Entity
 public class Director {
-
     @ColumnInfo(name = "id")
+    @PrimaryKey
     protected int id = 0;
     @ColumnInfo(name = "name")
     protected String name = "";

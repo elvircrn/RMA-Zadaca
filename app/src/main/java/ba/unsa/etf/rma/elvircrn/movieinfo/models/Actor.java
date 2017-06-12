@@ -7,6 +7,7 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Relation;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
@@ -105,6 +106,7 @@ public class Actor implements Parcelable {
     private int  id;
     @Ignore
     private List<Movie> movies;
+
     @Ignore
     private List<Genre> genres;
     @Ignore
