@@ -4,12 +4,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.models;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.Relation;
-import android.arch.persistence.room.TypeConverter;
-import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -17,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.dao.converters.GenderConverter;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 
 @Entity
@@ -53,6 +47,7 @@ public class Actor implements Parcelable {
 
     public enum Gender { NONBINARY, FEMALE, MALE };
 
+    @Ignore
     public Actor() {
         genres = new ArrayList<>();
         directors = new ArrayList<>();
@@ -93,7 +88,7 @@ public class Actor implements Parcelable {
     private int rating;
     @ColumnInfo(name = "year_of_death")
     private int yearOfDeath = -1;
-    @ColumnInfo(name = "gender")
+    @Ignore
     private Gender gender;
     @ColumnInfo(name = "biography")
     private String biography;
@@ -249,6 +244,7 @@ public class Actor implements Parcelable {
         return imgUrl;
     }
 
+    @Ignore
     public Gender getGenderColor() { return gender; }
 
     // Parcelable
@@ -301,4 +297,17 @@ public class Actor implements Parcelable {
             return new Actor[size];
         }
     };
+
+    public Actor(String name, String surname, String placeOfBirth, int yearOfBirth, int rating, int yearOfDeath, String biography, String imdbLink, String imgUrl, int id) {
+        this.name = name;
+        this.surname = surname;
+        this.placeOfBirth = placeOfBirth;
+        this.yearOfBirth = yearOfBirth;
+        this.rating = rating;
+        this.yearOfDeath = yearOfDeath;
+        this.biography = biography;
+        this.imdbLink = imdbLink;
+        this.imgUrl = imgUrl;
+        this.id = id;
+    }
 }

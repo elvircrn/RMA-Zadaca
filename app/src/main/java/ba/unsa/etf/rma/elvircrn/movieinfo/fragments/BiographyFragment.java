@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dao.ActorDbService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBinding;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
@@ -27,7 +28,6 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.GenreMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.mappers.PersonMapper;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.ActorWithGenres;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CastItemDTO;
@@ -139,16 +139,15 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
     void initCheckBox() {
         checkBoxStream = RxCheckBox.fromCheckBox(bookmarked);
-
         subscriberHolder.add(
                 checkBoxStream.compose(Rx.<Boolean>applyDbSchedulers())
                         .subscribe(new Consumer<Boolean>() {
                             @Override
                             public void accept(@NonNull Boolean bookmarked) throws Exception {
                                 if (bookmarked) {
-                                    DataProvider.getInstance().getDb().actorDAO().insertAll(binding.getActor());
+                                    ActorDbService.addActor(binding.getActor());
                                 } else {
-                                    DataProvider.getInstance().getDb().actorDAO().delete(binding.getActor());
+                                    ActorDbService.deleteActor(binding.getActor());
                                 }
                             }
                         })
@@ -167,7 +166,7 @@ public class BiographyFragment extends Fragment implements ITaggable {
         return FRAGMENT_TAG;
     }
 
-    public void setActor(Actor actor) {
+    public void setActor(final Actor actor) {
 
         this.actor = actor;
         binding.setActor(actor);
@@ -276,49 +275,37 @@ public class BiographyFragment extends Fragment implements ITaggable {
                 .retry()
                 .take(1);
 
+        subscriberHolder.add(
+                ActorDbService.fullActor(actor.getId())
+                        .take(1)
+                        .compose(Rx.<Actor>applySchedulers())
+                        .subscribe(new Consumer<Actor>() {
+                            @Override
+                            public void accept(@NonNull Actor actor) throws Exception {
+                                bookmarked.setEnabled(true);
+                                bookmarked.setChecked(actor.getId() != -1);
+                            }
+                        }));
 
-        Observable<List<ActorWithGenres>> actorsDbStream = DataProvider.getInstance().getDb()
-                .actorGenreDAO()
-                .findActorWithGenresById(actor.getId())
-                .toObservable()
-                .compose(Rx.<List<ActorWithGenres>>applySchedulers());
+        subscriberHolder.add(
+                Observable.merge(ActorDbService.fullActor(actor.getId()), actorService)
+                        .compose(Rx.<Actor>applySchedulers())
+                        .filter(new Predicate<Actor>() {
+                            @Override
+                            public boolean test(@NonNull Actor actor) throws Exception {
+                                return actor.getId() != -1;
+                            }
+                        })
+                        .take(1)
+                        .subscribe(new Consumer<Actor>() {
+                            @Override
+                            public void accept(@NonNull Actor actor) throws Exception {
+                                binding.setActor(actor);
+                                binding.notifyChange();
+                            }
+                        })
+        );
 
-        Observable<Actor> actorDbStream = actorsDbStream.map(new Function<List<ActorWithGenres>, Actor>() {
-                    @Override
-                    public Actor apply(@NonNull List<ActorWithGenres> actors) throws Exception {
-                        bookmarked.setEnabled(true);
-                        bookmarked.setChecked(!actors.isEmpty());
-
-                        if (actors.isEmpty()) {
-                            Actor actor = new Actor();
-                            actor.setId(-1);
-                            return actor;
-                        }
-                        else {
-                            // actor = actors.get(0).getActor();
-                            return actors.get(0).actor;
-                        }
-                    }
-                });
-
-        Observable.merge(actorDbStream, actorService)
-                .compose(Rx.<Actor>applySchedulers())
-                .filter(new Predicate<Actor>() {
-                    @Override
-                    public boolean test(@NonNull Actor actor) throws Exception {
-                        return actor.getId() != -1;
-                    }
-                })
-                .take(1)
-                .subscribe(new Consumer<Actor>() {
-                    @Override
-                    public void accept(@NonNull Actor actor) throws Exception {
-                        binding.setActor(actor);
-                        binding.notifyChange();
-
-
-                    }
-                });
     }
 
     @Override

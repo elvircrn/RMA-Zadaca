@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 6,
-    "identityHash": "cdc60569d64c28393a2f0a993640c742",
+    "version": 8,
+    "identityHash": "b77d6a784d0e734be5ffa7dfea77af35",
     "entities": [
       {
         "tableName": "Actor",
@@ -149,11 +149,40 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "ActorDirector",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `actor_id` INTEGER, `director_id` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "actorId",
+            "columnName": "actor_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "directorId",
+            "columnName": "director_id",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"cdc60569d64c28393a2f0a993640c742\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b77d6a784d0e734be5ffa7dfea77af35\")"
     ]
   }
 }

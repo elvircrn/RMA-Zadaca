@@ -8,18 +8,19 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.ActorDirector;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.ActorGenre;
 import io.reactivex.Flowable;
 
 @Dao
-public interface ActorGenreDAO {
-    @Query("SELECT * from actorgenre where actor_id = (:actorId)")
-    Flowable<List<ActorGenre>> findActorWithGenresById(int actorId);
+public interface ActorDirectorDAO {
+    @Query("SELECT * from actordirector where actor_id = (:actorId)")
+    Flowable<List<ActorDirector>> findActorWithDirectorsById(int actorId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(ActorGenre... actorGenres);
+    void insertAll(ActorDirector... actorDirectors);
 
     @Delete
-    void delete(ActorGenre actorGenre);
+    void delete(ActorDirector actorDirector);
+
 }

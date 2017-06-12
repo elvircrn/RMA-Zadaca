@@ -6,17 +6,22 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity
-public class ActorGenre {
-    public ActorGenre(int id, int actorId, int genreId) {
-        this.id = id;
-        this.actorId = actorId;
-        this.genreId = genreId;
-    }
+public class ActorDirector {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    @ColumnInfo(name = "actor_id")
+    private int actorId;
 
     @Ignore
-    public ActorGenre(int actorId, int genreId) {
+    public ActorDirector(int actorId, int directorId) {
         this.actorId = actorId;
-        this.genreId = genreId;
+        this.directorId = directorId;
+    }
+
+    public ActorDirector(int id, int actorId, int directorId) {
+        this.id = id;
+        this.actorId = actorId;
+        this.directorId = directorId;
     }
 
     public int getId() {
@@ -35,19 +40,16 @@ public class ActorGenre {
         this.actorId = actorId;
     }
 
-    public int getGenreId() {
-        return genreId;
+    public int getDirectorId() {
+        return directorId;
     }
 
-    public void setGenreId(int genreId) {
-        this.genreId = genreId;
+    public void setDirectorId(int directorId) {
+        this.directorId = directorId;
     }
 
-    @PrimaryKey(autoGenerate = true)
-    private int id;
-    @ColumnInfo(name = "actor_id")
-    private int actorId;
-    @ColumnInfo(name = "genre_id")
-    private int genreId;
+    @ColumnInfo(name = "director_id")
+
+    private int directorId;
 
 }

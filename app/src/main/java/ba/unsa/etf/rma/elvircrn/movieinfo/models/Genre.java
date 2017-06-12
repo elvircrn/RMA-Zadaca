@@ -15,16 +15,22 @@ public class Genre {
     @ColumnInfo(name = "name")
     protected String name;
 
-    @Ignore
+    @ColumnInfo(name = "img_url")
     protected String imgUrl = "genredefault";
     @Ignore
     private static String locale;
     @Ignore
     private TreeMap<String, String> translations = new TreeMap<>();
 
+    @Ignore
     public Genre() { }
 
     @Ignore
+    public Genre(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Genre(int id, String name, String imgUrl) {
         this.id = id;
         this.name = name;
@@ -74,5 +80,5 @@ public class Genre {
         return id;
     }
 
-    public void setId(int value) { id = value; }
+    public void setId(int id) { this.id = id; }
 }
