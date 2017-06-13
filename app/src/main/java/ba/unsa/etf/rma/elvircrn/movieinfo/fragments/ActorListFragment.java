@@ -124,7 +124,7 @@ public class ActorListFragment extends Fragment implements ITaggable {
                         if (s.startsWith(ACTORS_NAME_QUERY)) {
                             String actorName = s.substring(ACTORS_NAME_QUERY.length());
                             return DataProvider.getInstance().getDb().actorDAO().findByName(actorName).toObservable()
-                                    .observeOn(Schedulers.newThread())
+                                    .retry()
                                     .map(new Function<List<Actor>, ArrayList<Actor>>() {
                                         @Override
                                         public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {
@@ -134,7 +134,8 @@ public class ActorListFragment extends Fragment implements ITaggable {
                         } else if (s.startsWith(DIRECTOR_NAME_QUERY)) {
                             String directorName = s.substring(DIRECTOR_NAME_QUERY.length());
                             return ActorDbService.findByDirectorName(directorName)
-                                    .observeOn(Schedulers.newThread())
+                                    .toObservable()
+                                    .retry()
                                     .map(new Function<List<Actor>, ArrayList<Actor>>() {
                                         @Override
                                         public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {

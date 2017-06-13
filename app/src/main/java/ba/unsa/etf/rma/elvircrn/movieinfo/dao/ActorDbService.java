@@ -11,6 +11,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Single;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -26,7 +27,7 @@ public class ActorDbService {
     }
 
     private static void deleteActorDirector(Actor actor) {
-        DataProvider.getInstance().getDb().actorDirectorDAO().findActorWithDirectorsById(actor.getId())
+        DataProvider.getInstance().getDb().actorDirectorDAO().findByActorId(actor.getId())
                 .toObservable()
                 .compose(Rx.<List<ActorDirector>>applyDbSchedulers())
                 .subscribe(new Consumer<List<ActorDirector>>() {
@@ -56,7 +57,7 @@ public class ActorDbService {
 
     private static Observable<List<Director>> getDirectorStream(int actorId) {
         return DataProvider.getInstance().getDb().actorDirectorDAO()
-                .findActorWithDirectorsById(actorId)
+                .findByActorId(actorId)
                 .toObservable()
                 .flatMap(new Function<List<ActorDirector>, Observable<List<Director>>>() {
                     @Override
@@ -107,7 +108,7 @@ public class ActorDbService {
 
     }
 
-    public static Observable<Actor> fullActor(int actorId) {
+    public static Observable<Actor> getFullActor(int actorId) {
         return Observable.zip(getBasicActorStream(actorId), getGenreStream(actorId), getDirectorStream(actorId), new Function3<Actor, List<Genre>, List<Director>, Actor>() {
             @Override
             public Actor apply(@NonNull Actor actor, @NonNull List<Genre> genres, @NonNull List<Director> directors) throws Exception {
@@ -132,25 +133,27 @@ public class ActorDbService {
         }
     }
 
-    public static Observable<List<Actor>> findByDirectorName(final String directorName) {
+    public static Single<List<Actor>> findByDirectorName(final String directorName) {
         return DataProvider.getInstance().getDb().actorDAO()
                 .getAll()
                 .toObservable()
                 .compose(Rx.<List<Actor>>applyDbSchedulers())
-                .flatMap(new Function<List<Actor>, Observable<Actor>>() {
+                .flatMap(new Function<List<Actor>, Observable<List<Actor>>>() {
                     @Override
-                    public Observable<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                    public Observable<List<Actor>> apply(@NonNull List<Actor> actors) throws Exception {
                         return Observable.fromIterable(actors)
                                 .flatMap(new Function<Actor, ObservableSource<Actor>>() {
                                     @Override
                                     public ObservableSource<Actor> apply(@NonNull Actor actor) throws Exception {
-                                        return fullActor(actor.getId());
+                                        return getFullActor(actor.getId());
                                     }
-                                });
+                                })
+                                .take(actors.size())
+                                .toList()
+                                .toObservable()
+                                .take(1);
                     }
                 })
-                .toList()
-                .toObservable()
                 .flatMap(new Function<List<Actor>, Observable<Actor>>() {
                     @Override
                     public Observable<Actor> apply(@NonNull List<Actor> actors) throws Exception {
@@ -161,13 +164,14 @@ public class ActorDbService {
                     @Override
                     public boolean test(@NonNull Actor actor) throws Exception {
                         for (Director director : actor.getDirectors()) {
-                            if (director.getName().contains(directorName))
+                            if (director.getName().contains(directorName)) {
+                                int m = 2;
                                 return true;
+                            }
                         }
                         return false;
                     }
                 })
-                .toList()
-                .toObservable();
+                .toList();
     }
 }

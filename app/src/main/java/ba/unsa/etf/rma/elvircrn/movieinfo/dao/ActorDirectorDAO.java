@@ -15,12 +15,14 @@ import io.reactivex.Flowable;
 @Dao
 public interface ActorDirectorDAO {
     @Query("SELECT * from actordirector where actor_id = (:actorId)")
-    Flowable<List<ActorDirector>> findActorWithDirectorsById(int actorId);
+    Flowable<List<ActorDirector>> findByActorId(int actorId);
+
+    @Query("SELECT * from actordirector where director_id = (:directorId)")
+    Flowable<List<ActorDirector>> findByDirectorId(int directorId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(ActorDirector... actorDirectors);
 
     @Delete
     void delete(ActorDirector actorDirector);
-
 }
