@@ -1,5 +1,6 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -32,10 +33,17 @@ public class ActorAdapter extends RecyclerView.Adapter<ActorAdapter.ViewHolder> 
         this.actors = actors;
     }
 
+
+    LayoutInflater layoutInflater;
+    LayoutInflater getLayoutInflater(Context context) {
+        if (layoutInflater == null)
+            layoutInflater = LayoutInflater.from(context);
+        return layoutInflater;
+    }
+
     @Override
     public ActorAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater =
-                LayoutInflater.from(parent.getContext());
+        LayoutInflater layoutInflater = getLayoutInflater(parent.getContext());
         ActorListItemBinding itemBinding =
                 ActorListItemBinding.inflate(layoutInflater, parent, false);
         return new ActorAdapter.ViewHolder(itemBinding);

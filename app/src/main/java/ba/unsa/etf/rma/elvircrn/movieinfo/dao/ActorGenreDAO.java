@@ -17,6 +17,9 @@ public interface ActorGenreDAO {
     @Query("SELECT * from actorgenre where actor_id = (:actorId)")
     Flowable<List<ActorGenre>> findActorWithGenresById(int actorId);
 
+    @Query("SELECT * from actorgenre")
+    Flowable<List<ActorGenre>> getAll();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(ActorGenre... actorGenres);
 

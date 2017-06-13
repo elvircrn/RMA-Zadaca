@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -16,7 +17,6 @@ import android.widget.Toast;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.dao.ActorDbService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.databinding.ActorBiographyFragmentBinding;
-import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.JHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
 import ba.unsa.etf.rma.elvircrn.movieinfo.interfaces.ITaggable;
 import ba.unsa.etf.rma.elvircrn.movieinfo.managers.PeopleManager;
@@ -24,6 +24,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxCheckBox;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -53,53 +54,50 @@ public class BiographyFragment extends Fragment implements ITaggable {
 
     public BiographyFragment() { }
 
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments().containsKey(getActorParamTag())) {
+            this.actor = (Actor) getArguments().get(getActorParamTag());
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.actor_biography_fragment, container, false);
         ButterKnife.bind(this, binding.getRoot());
         initCheckBox();
-        if (getArguments().containsKey(getActorParamTag())) {
-            setActor((Actor) getArguments().get(getActorParamTag()));
-        }
+        hideProgress();
         return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        addOnButtonClickListeners();
         loadBiography();
     }
 
-    void addOnButtonClickListeners() {
-        ImageButton imdbButton = (ImageButton) getView().findViewById(R.id.imdbButton);
-        imdbButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                if (actor.getImdbLink() != null && !actor.getImdbLink().isEmpty())
-                    i.setData(Uri.parse(actor.getImdbLink()));
-                else
-                    Toast.makeText(getContext(), String.valueOf(R.string.imdb_toast_error), 3)
-                            .show();
-                startActivity(i);
-            }
-        });
+    @OnClick(R.id.shareButton)
+    public void shareClick(View view) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.putExtra(Intent.EXTRA_TEXT, actor.getBiography());
+        i.setType("text/plain");
 
-        ImageButton shareBio = (ImageButton) getView().findViewById(R.id.shareButton);
-        shareBio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.putExtra(Intent.EXTRA_TEXT, actor.getBiography());
-                i.setType("text/plain");
-
-                if (i.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivity(i);
-                }
-            }
-        });
+        if (i.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(i);
+        }
+    }
+    @OnClick(R.id.imdbButton)
+    public void imdbClick(View view) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        if (actor.getImdbLink() != null && !actor.getImdbLink().isEmpty())
+            i.setData(Uri.parse(actor.getImdbLink()));
+        else
+            Toast.makeText(getContext(), String.valueOf(R.string.imdb_toast_error), 3)
+                    .show();
+        startActivity(i);
     }
 
     @Override
@@ -198,8 +196,15 @@ public class BiographyFragment extends Fragment implements ITaggable {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        hideProgress();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
         subscriberHolder.dispose();
+        hideProgress();
     }
 }

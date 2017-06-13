@@ -38,6 +38,8 @@ public class ActorDbService {
                         }
                     }
                 });
+
+        DirectorDbService.deleteInvalidDirectors();
     }
 
     private static void deleteActorGenre(Actor actor) {
@@ -53,40 +55,7 @@ public class ActorDbService {
                     }
                 });
 
-    }
-
-    private static Observable<List<Director>> getDirectorStream(int actorId) {
-        return DataProvider.getInstance().getDb().actorDirectorDAO()
-                .findByActorId(actorId)
-                .toObservable()
-                .flatMap(new Function<List<ActorDirector>, Observable<List<Director>>>() {
-                    @Override
-                    public Observable<List<Director>> apply(@NonNull List<ActorDirector> actorDirectors) throws Exception {
-                        int[] directorIds = new int[actorDirectors.size()];
-                        for (int i = 0; i < actorDirectors.size(); i++) {
-                            directorIds[i] = actorDirectors.get(i).getDirectorId();
-                        }
-                        return DataProvider.getInstance().getDb().directorDAO()
-                                .loadAllByIds(directorIds).toObservable();
-                    }
-                });
-    }
-
-    private static Observable<List<Genre>> getGenreStream(int actorId) {
-        return DataProvider.getInstance().getDb().actorGenreDAO()
-                .findActorWithGenresById(actorId)
-                .toObservable()
-                .flatMap(new Function<List<ActorGenre>, Observable<List<Genre>>>() {
-                    @Override
-                    public Observable<List<Genre>> apply(@NonNull List<ActorGenre> actorGenres) throws Exception {
-                        int[] genreIds = new int[actorGenres.size()];
-                        for (int i = 0; i < actorGenres.size(); i++) {
-                            genreIds[i] = actorGenres.get(i).getGenreId();
-                        }
-                        return DataProvider.getInstance().getDb().genreDAO()
-                                .loadAllByIds(genreIds).toObservable();
-                    }
-                });
+        GenreDbService.deleteInvalidGenres();
     }
 
     private static Observable<Actor> getBasicActorStream(int actorId) {
@@ -109,7 +78,8 @@ public class ActorDbService {
     }
 
     public static Observable<Actor> getFullActor(int actorId) {
-        return Observable.zip(getBasicActorStream(actorId), getGenreStream(actorId), getDirectorStream(actorId), new Function3<Actor, List<Genre>, List<Director>, Actor>() {
+        return Observable.zip(getBasicActorStream(actorId), GenreDbService.getGenreStream(actorId),
+                DirectorDbService.getDirectorStream(actorId), new Function3<Actor, List<Genre>, List<Director>, Actor>() {
             @Override
             public Actor apply(@NonNull Actor actor, @NonNull List<Genre> genres, @NonNull List<Director> directors) throws Exception {
                 actor.setGenres(genres);
@@ -125,11 +95,11 @@ public class ActorDbService {
         GenreDbService.addGenres(actor.getGenres());
         for (Genre genre : actor.getGenres()) {
             DataProvider.getInstance().getDb().actorGenreDAO()
-                    .insertAll(new ActorGenre(0, actor.getId(), genre.getId()));
+                    .insertAll(new ActorGenre(actor.getId(), genre.getId()));
         }
         for (Director director : actor.getDirectors()) {
             DataProvider.getInstance().getDb().actorDirectorDAO()
-                    .insertAll(new ActorDirector(0, actor.getId(), director.getId()));
+                    .insertAll(new ActorDirector(actor.getId(), director.getId()));
         }
     }
 

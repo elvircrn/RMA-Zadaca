@@ -4,11 +4,13 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.TreeMap;
 
 @Entity
-public class Genre {
+public class Genre implements Parcelable {
     @ColumnInfo(name = "id")
     @PrimaryKey
     protected int id;
@@ -19,8 +21,6 @@ public class Genre {
     protected String imgUrl = "genredefault";
     @Ignore
     private static String locale;
-    @Ignore
-    private TreeMap<String, String> translations = new TreeMap<>();
 
     @Ignore
     public Genre() { }
@@ -48,20 +48,7 @@ public class Genre {
     }
 
     public String getName() {
-        if (locale != null && locale != "" && translations.containsKey(locale)) {
-            return translations.get(locale);
-        } else {
-            return name;
-        }
-    }
-
-    /**
-     * Implementirana je podrska za jednostavno dodavanje jezika, za slucaj da je bilo potrebno
-     * dodati i tu mogucnost.
-     */
-    public Genre addTranslation(String language, String translation) {
-        translations.put(language, translation);
-        return this;
+        return name;
     }
 
     public void setName(String name) {
@@ -81,4 +68,32 @@ public class Genre {
     }
 
     public void setId(int id) { this.id = id; }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
+        dest.writeString(this.name);
+        dest.writeString(this.imgUrl);
+    }
+
+    protected Genre(Parcel in) {
+        this.id = in.readInt();
+        this.name = in.readString();
+        this.imgUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<Genre> CREATOR = new Parcelable.Creator<Genre>() {
+        public Genre createFromParcel(Parcel source) {
+            return new Genre(source);
+        }
+
+        public Genre[] newArray(int size) {
+            return new Genre[size];
+        }
+    };
 }

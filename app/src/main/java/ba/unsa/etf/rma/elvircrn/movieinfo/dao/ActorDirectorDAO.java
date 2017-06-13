@@ -20,6 +20,9 @@ public interface ActorDirectorDAO {
     @Query("SELECT * from actordirector where director_id = (:directorId)")
     Flowable<List<ActorDirector>> findByDirectorId(int directorId);
 
+    @Query("SELECT * from actordirector")
+    Flowable<List<ActorDirector>> getAll();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(ActorDirector... actorDirectors);
 
