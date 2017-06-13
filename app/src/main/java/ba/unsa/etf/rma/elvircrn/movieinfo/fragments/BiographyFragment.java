@@ -113,9 +113,9 @@ public class BiographyFragment extends Fragment implements ITaggable {
                         .subscribe(new Consumer<Boolean>() {
                             @Override
                             public void accept(@NonNull Boolean bookmarked) throws Exception {
-                                if (bookmarked) {
+                                if (BiographyFragment.this.bookmarked.isEnabled() && bookmarked) {
                                     ActorDbService.addActor(BiographyFragment.this.actor);
-                                } else {
+                                } else if (BiographyFragment.this.bookmarked.isEnabled()) {
                                     ActorDbService.deleteActor(BiographyFragment.this.actor);
                                 }
                             }

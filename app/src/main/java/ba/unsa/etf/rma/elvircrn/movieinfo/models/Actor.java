@@ -249,6 +249,19 @@ public class Actor implements Parcelable {
 
     // Parcelable
 
+    public Actor(String name, String surname, String placeOfBirth, int yearOfBirth, int rating, int yearOfDeath, String biography, String imdbLink, String imgUrl, int id) {
+        this.name = name;
+        this.surname = surname;
+        this.placeOfBirth = placeOfBirth;
+        this.yearOfBirth = yearOfBirth;
+        this.rating = rating;
+        this.yearOfDeath = yearOfDeath;
+        this.biography = biography;
+        this.imdbLink = imdbLink;
+        this.imgUrl = imgUrl;
+        this.id = id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -268,9 +281,10 @@ public class Actor implements Parcelable {
         dest.writeString(this.imgUrl);
         dest.writeInt(this.id);
         dest.writeTypedList(movies);
+        dest.writeTypedList(genres);
+        dest.writeTypedList(directors);
     }
 
-    @Ignore
     protected Actor(Parcel in) {
         this.name = in.readString();
         this.surname = in.readString();
@@ -285,9 +299,10 @@ public class Actor implements Parcelable {
         this.imgUrl = in.readString();
         this.id = in.readInt();
         this.movies = in.createTypedArrayList(Movie.CREATOR);
+        this.genres = in.createTypedArrayList(Genre.CREATOR);
+        this.directors = in.createTypedArrayList(Director.CREATOR);
     }
 
-    @Ignore
     public static final Creator<Actor> CREATOR = new Creator<Actor>() {
         public Actor createFromParcel(Parcel source) {
             return new Actor(source);
@@ -297,17 +312,4 @@ public class Actor implements Parcelable {
             return new Actor[size];
         }
     };
-
-    public Actor(String name, String surname, String placeOfBirth, int yearOfBirth, int rating, int yearOfDeath, String biography, String imdbLink, String imgUrl, int id) {
-        this.name = name;
-        this.surname = surname;
-        this.placeOfBirth = placeOfBirth;
-        this.yearOfBirth = yearOfBirth;
-        this.rating = rating;
-        this.yearOfDeath = yearOfDeath;
-        this.biography = biography;
-        this.imdbLink = imdbLink;
-        this.imgUrl = imgUrl;
-        this.id = id;
-    }
 }

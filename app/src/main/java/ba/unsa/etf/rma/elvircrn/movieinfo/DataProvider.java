@@ -99,10 +99,10 @@ public class DataProvider {
     }
 
     void seedGenres() {
-        genres.add(new Genre("Horror", "horror").addTranslation("hrvatski", "Horor").addTranslation("bosanski", "Horor"));
-        genres.add(new Genre("Comedy", "comedy").addTranslation("hrvatski", "Komedija").addTranslation("bosanski", "Komedija"));
-        genres.add(new Genre("Drama", "drama").addTranslation("hrvatski", "Drama").addTranslation("bosanski", "Drama"));
-        genres.add(new Genre("SciFi", "scifi").addTranslation("hrvatski", "SciFi").addTranslation("bosanski", "Scifi"));
+        genres.add(new Genre("Horror", "horror"));
+        genres.add(new Genre("Comedy", "comedy"));
+        genres.add(new Genre("Drama", "drama"));
+        genres.add(new Genre("SciFi", "scifi"));
     }
 
     void seedDirectors() {
