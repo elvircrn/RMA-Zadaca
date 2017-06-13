@@ -9,11 +9,14 @@ Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 
 
 # Spirala 4
 Za potrebe ove spirale sam koristio https://developer.android.com/topic/libraries/architecture/room.html.
+
 RxJava2 + Room + Retrofit -> :muscle: :muscle: :muscle:
 
 # Zadatak 1
 a) Implementirano
+
 b) Implementirano
+
 c) Implementirano
 
 # Zadatak 2
@@ -21,6 +24,7 @@ Implementirano
 
 # Zadatak 3
 a) Implementirano
+
 b) Implementirano
 
 # Zadatak 4
@@ -82,11 +86,14 @@ Sve stavke implementirane.
 
 ## Zadatak 3
 a) Implementirano
+
 b) Implementirano
+
 c) Implementirano
 
 ## Zadatak 4
 a) Implementirano
+
 b) Implementirano
 
 
