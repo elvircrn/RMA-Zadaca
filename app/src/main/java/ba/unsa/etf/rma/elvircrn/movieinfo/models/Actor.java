@@ -99,6 +99,18 @@ public class Actor implements Parcelable {
     @PrimaryKey
     @ColumnInfo(name = "id")
     private int  id;
+
+    public int getGenderId() {
+        return genderId;
+    }
+
+    public void setGenderId(int genderId) {
+        this.genderId = genderId;
+    }
+
+    @ColumnInfo(name = "gender_id")
+    private int genderId;
+
     @Ignore
     private List<Movie> movies;
 
@@ -149,7 +161,7 @@ public class Actor implements Parcelable {
         this.yearOfBirth = yearOfBirth;
         this.rating = rating;
         this.yearOfDeath = yearOfDeath;
-        this.gender = gender;
+        setGender(gender);
         this.biography = biography;
         this.imdbLink = imdbLink;
         this.imgUrl = imageUrl;
@@ -177,11 +189,12 @@ public class Actor implements Parcelable {
     }
 
     public Gender getGender() {
-        return gender;
+        return Gender.values()[genderId];
     }
 
     public void setGender(Gender gender) {
         this.gender = gender;
+        this.genderId = gender.ordinal();
     }
 
     public String getBiography() {
@@ -249,7 +262,7 @@ public class Actor implements Parcelable {
 
     // Parcelable
 
-    public Actor(String name, String surname, String placeOfBirth, int yearOfBirth, int rating, int yearOfDeath, String biography, String imdbLink, String imgUrl, int id) {
+    public Actor(String name, String surname, String placeOfBirth, int yearOfBirth, int rating, int yearOfDeath, String biography, String imdbLink, String imgUrl, int id, int genderId) {
         this.name = name;
         this.surname = surname;
         this.placeOfBirth = placeOfBirth;
@@ -260,6 +273,7 @@ public class Actor implements Parcelable {
         this.imdbLink = imdbLink;
         this.imgUrl = imgUrl;
         this.id = id;
+        this.genderId = genderId;
     }
 
     @Override
@@ -283,6 +297,7 @@ public class Actor implements Parcelable {
         dest.writeTypedList(movies);
         dest.writeTypedList(genres);
         dest.writeTypedList(directors);
+        dest.writeInt(genderId);
     }
 
     protected Actor(Parcel in) {
@@ -301,6 +316,7 @@ public class Actor implements Parcelable {
         this.movies = in.createTypedArrayList(Movie.CREATOR);
         this.genres = in.createTypedArrayList(Genre.CREATOR);
         this.directors = in.createTypedArrayList(Director.CREATOR);
+        this.genderId = in.readInt();
     }
 
     public static final Creator<Actor> CREATOR = new Creator<Actor>() {

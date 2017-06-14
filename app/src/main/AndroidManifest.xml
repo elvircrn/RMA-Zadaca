@@ -3,7 +3,8 @@
     package="ba.unsa.etf.rma.elvircrn.movieinfo">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -20,6 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".fragments.BiographyFragment" />
+        <activity android:name=".fragments.MovieCalendarFragment" />
+        <activity android:name=".fragments.MovieListFragment" />
         <activity android:name=".fragments.DirectorListFragment" />
         <activity android:name=".fragments.GenreListFragment"></activity>
     </application>

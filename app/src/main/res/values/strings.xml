@@ -11,4 +11,5 @@
     <string name="bio_toast_error">Failed to load biography</string>
     <string name="imdb_toast_error">Imdb link not available</string>
     <string name="movies">Movies</string>
+    <string name="save">Save</string>
 </resources>

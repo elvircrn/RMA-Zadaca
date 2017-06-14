@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ActorListFragment">
+    tools:context="ba.unsa.etf.rma.elvircrn.movieinfo.fragments.MovieListFragment">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -11,7 +11,7 @@
         android:weightSum="20">
 
         <SearchView
-            android:id="@+id/searchView"
+            android:id="@+id/movieSearchView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="18" />
@@ -22,14 +22,14 @@
             android:layout_weight="2">
 
             <ProgressBar
-                android:id="@+id/progress_bar"
+                android:id="@+id/movies_progress_bar"
                 style="?android:progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/actorsList"
+                android:id="@+id/moviesList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </FrameLayout>

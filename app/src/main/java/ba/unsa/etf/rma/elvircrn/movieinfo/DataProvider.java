@@ -8,6 +8,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.dal.DatabaseFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
 
 public class DataProvider {
     private static DataProvider instance = null;
@@ -40,6 +41,16 @@ public class DataProvider {
 
     private ArrayList<Genre> genres;
 
+    public ArrayList<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(ArrayList<Movie> movies) {
+        this.movies = movies;
+    }
+
+    private ArrayList<Movie> movies;
+
     public ArrayList<Genre> getSelectedGenres() {
         return selectedGenres;
     }
@@ -59,6 +70,7 @@ public class DataProvider {
         actors = new ArrayList<>();
         directors = new ArrayList<>();
         genres = new ArrayList<>();
+        movies = new ArrayList<>();
     }
 
     public static void initDatabase(AppDatabase db) {

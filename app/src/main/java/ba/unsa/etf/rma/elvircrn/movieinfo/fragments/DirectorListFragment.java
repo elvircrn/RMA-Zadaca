@@ -44,8 +44,6 @@ public class DirectorListFragment extends Fragment implements ITaggable {
     @Override
     public void onResume() {
         super.onResume();
-
-        // DataProvider.getInstance().seed();
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 

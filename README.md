@@ -12,6 +12,29 @@ Za potrebe ove spirale sam koristio https://developer.android.com/topic/librarie
 
 RxJava2 + Room + Retrofit -> :muscle: :muscle: :muscle:
 
+```java
+    ActorDbService.getFullActor(actor.getId())
+            .mergeWith(PeopleManager.getInstance().getFullActor(actor))
+            .compose(Rx.<Actor>applySchedulers())
+            .filter(new Predicate<Actor>() {
+                @Override
+                public boolean test(@NonNull Actor actor) throws Exception {
+                    return actor.getId() != -1;
+                }
+            })
+            .take(1)
+            .subscribe(new Consumer<Actor>() {
+                @Override
+                public void accept(@NonNull Actor actor) throws Exception {
+                    binding.setActor(actor);
+                    binding.notifyChange();
+                    BiographyFragment.this.actor = actor;
+                    bookmarked.setEnabled(true);
+                    hideProgress();
+                }
+            })
+```
+
 # Zadatak 1
 a) Implementirano
 
@@ -28,6 +51,13 @@ a) Implementirano
 b) Implementirano
 
 # Zadatak 4
+
+a) Implementirano
+
+b) Implementirano
+
+c)
+
 
 # Spirala 3
 

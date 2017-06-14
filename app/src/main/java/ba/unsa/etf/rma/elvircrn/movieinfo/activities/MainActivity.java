@@ -1,12 +1,14 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
 
+import android.Manifest;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -23,10 +25,17 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.BiographyFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.ButtonsFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.DirectorListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.GenreListFragment;
+import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.MovieCalendarFragment;
+import ba.unsa.etf.rma.elvircrn.movieinfo.fragments.MovieListFragment;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
+import butterknife.ButterKnife;
 
 
-public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener, ActorListFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements ButtonsFragment.OnFragmentInteractionListener,
+        ActorListFragment.OnFragmentInteractionListener,
+        MovieListFragment.OnFragmentInteractionListener {
+
     /**
      * NARROW - width < 500dp
      * WIDE   - otherwise
@@ -51,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
         Stetho.initializeWithDefaults(this);
-
 
         String currentLanguage = Locale.getDefault().getDisplayLanguage();
         DataProvider.getInstance().setLocale(currentLanguage);
@@ -64,6 +73,15 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         initSearch();
 
         initDb();
+
+        checkPermissions();
+    }
+
+    void checkPermissions() {
+        // Assume thisActivity is the current activity
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CALENDAR);
+
     }
 
     protected void initDb() {
@@ -96,6 +114,20 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                 R.id.frame1, ActorListFragment.getTypeFragmentTag(),
                 false, null, null, null);
 
+    }
+
+    public void displayMovie(Movie movie) {
+        MovieCalendarFragment movieCalendarFragment = getMovieCalendarFragment();
+
+        if (movieCalendarFragment != null && movieCalendarFragment.isVisible()) {
+            movieCalendarFragment.setMovie(movie);
+        } else {
+            this.setSingleFragment(MovieCalendarFragment.class,
+                    getCurrentLayout() == LayoutMode.NARROW ? R.id.frame1 : R.id.frame2,
+                    MovieCalendarFragment.getTypeFragmentTag(),
+                    getCurrentLayout() == LayoutMode.NARROW, MovieCalendarFragment.getTypeFragmentTag(), MovieCalendarFragment.getMovieParamTag(), movie);
+
+        }
     }
 
     public void displayBiography(Actor actor) {
@@ -166,10 +198,23 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         else
             return null;
     }
+    public MovieCalendarFragment getMovieCalendarFragment() {
+        Fragment fragment = getSupportFragmentManager()
+                .findFragmentByTag(MovieCalendarFragment.getTypeFragmentTag());
+        if (fragment != null)
+            return (MovieCalendarFragment) fragment;
+        else
+            return null;
+    }
 
     @Override
     public void onFragmentInteraction(Actor actor) {
         displayBiography(actor);
+    }
+
+    @Override
+    public void onFragmentInteraction(Movie movie) {
+        displayMovie(movie);
     }
 
     @Override
@@ -178,15 +223,17 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fm.executePendingTransactions();
         if (getCurrentLayout() == LayoutMode.WIDE) {
-            if (v.getId() == R.id.actorsButton) {
+            if (v.getId() == R.id.actorsButtonWide) {
                 setSingleFragment(ActorListFragment.class,
                         R.id.frame1,
                         ActorListFragment.getTypeFragmentTag(),
                         false, ActorListFragment.getTypeFragmentTag(), null, null);
-                setSingleFragment(BiographyFragment.class,
-                        R.id.frame2,
-                        BiographyFragment.getTypeFragmentTag(),
-                        false, BiographyFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
+
+                if (!DataProvider.getInstance().getActors().isEmpty())
+                    setSingleFragment(BiographyFragment.class,
+                            R.id.frame2,
+                            BiographyFragment.getTypeFragmentTag(),
+                            false, BiographyFragment.getTypeFragmentTag(), BiographyFragment.getActorParamTag(), DataProvider.getInstance().getActors().get(0));
             } else if (v.getId() == R.id.othersButton) {
                 setSingleFragment(DirectorListFragment.class,
                         R.id.frame1,
@@ -196,6 +243,16 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                         R.id.frame2,
                         GenreListFragment.getTypeFragmentTag(),
                         false, GenreListFragment.getTypeFragmentTag(), null, null);
+            } else if (v.getId() == R.id.moviesButtonWide) {
+                setSingleFragment(MovieListFragment.class,
+                        R.id.frame1,
+                        MovieListFragment.getTypeFragmentTag(),
+                        false, MovieListFragment.getTypeFragmentTag(), null, null);
+                if (!DataProvider.getInstance().getMovies().isEmpty())
+                    setSingleFragment(MovieCalendarFragment.class,
+                        R.id.frame2,
+                        MovieCalendarFragment.getTypeFragmentTag(),
+                        false, MovieCalendarFragment.getTypeFragmentTag(), MovieCalendarFragment.getMovieParamTag(), DataProvider.getInstance().getMovies().get(0));
             }
         } else if (getCurrentLayout() == LayoutMode.NARROW) {
             if (v.getId() == R.id.actorsButton) {
@@ -213,6 +270,11 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
                         R.id.frame1,
                         DirectorListFragment.getTypeFragmentTag(),
                         false, DirectorListFragment.getTypeFragmentTag(), null, null);
+            } else if (v.getId() == R.id.moviesButton) {
+                setSingleFragment(MovieListFragment.class,
+                        R.id.frame1,
+                        MovieListFragment.getTypeFragmentTag(),
+                        false, MovieListFragment.getTypeFragmentTag(), null, null);
             }
         }
     }

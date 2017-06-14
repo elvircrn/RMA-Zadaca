@@ -31,8 +31,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -201,7 +199,6 @@ public class ActorListFragment extends Fragment implements ITaggable {
                     public void accept(@NonNull ArrayList<Actor> actors) throws Exception {
                         actorAdapter.setActors(actors);
                         actorAdapter.notifyDataSetChanged();
-
                         DataProvider.getInstance().setActors(actors);
                         hideSearch();
                     }
