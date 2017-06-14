@@ -12,4 +12,5 @@
     <string name="imdb_toast_error">Imdb link not available</string>
     <string name="movies">Movies</string>
     <string name="save">Save</string>
+    <string name="bookmarked">Bookmarked</string>
 </resources>

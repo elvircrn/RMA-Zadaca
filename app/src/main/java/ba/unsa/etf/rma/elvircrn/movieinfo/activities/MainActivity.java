@@ -2,10 +2,12 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.activities;
 
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
@@ -73,15 +75,6 @@ public class MainActivity extends AppCompatActivity implements ButtonsFragment.O
         initSearch();
 
         initDb();
-
-        checkPermissions();
-    }
-
-    void checkPermissions() {
-        // Assume thisActivity is the current activity
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_CALENDAR);
-
     }
 
     protected void initDb() {
