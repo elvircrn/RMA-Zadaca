@@ -1,12 +1,12 @@
 package ba.unsa.etf.rma.elvircrn.movieinfo.fragments;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import ba.unsa.etf.rma.elvircrn.movieinfo.DataProvider;
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.adapters.ActorAdapter;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dao.ActorDbService;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.ItemClickSupport;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.RecyclerViewHelpers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.helpers.Rx;
@@ -26,7 +27,10 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.view.RxSearch;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -35,10 +39,21 @@ import io.reactivex.functions.Predicate;
 
 
 public class ActorListFragment extends Fragment implements ITaggable {
+    private static final String DIRECTOR_NAME_QUERY = "director:";
+    private static final String ACTORS_NAME_QUERY = "actor:";
+
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.actorsList)
     RecyclerView recyclerView;
+
+    @BindView(R.id.searchView)
+    SearchView searchView;
+
     ActorAdapter actorAdapter;
     ItemClickSupport.OnItemClickListener mListener;
-    SearchView searchView;
+
     Observable<ActorSearchResponseDTO> searchStream;
     Observable<List<MovieCreditsDTO>> creditsStream;
 
@@ -76,18 +91,16 @@ public class ActorListFragment extends Fragment implements ITaggable {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        recyclerView = (RecyclerView) getView().findViewById(R.id.actorsList);
-        if (recyclerView != null) {
-            populateActors();
-        }
+        populateActors();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.actor_list_fragment, container, false);
+        ButterKnife.bind(this, view);
         if (savedInstanceState != null && savedInstanceState.containsKey("Search") &&
-                savedInstanceState.get("Search") != null){
+                savedInstanceState.get("Search") != null) {
             initSearchView(view, savedInstanceState.get("Search").toString());
         } else {
             initSearchView(view, null);
@@ -101,42 +114,99 @@ public class ActorListFragment extends Fragment implements ITaggable {
             subscriberHolder.dispose();
     }
 
-    protected void initSearchView(View view, String initText) {
-        searchView = (SearchView) view.findViewById(R.id.searchView);
-
-        RxSearch.fromSearchView(searchView, initText)
-                .debounce(300, TimeUnit.MILLISECONDS)
-                .filter(new Predicate<String>() {
-                    @Override
-                    public boolean test(@NonNull String s) throws Exception {
-                        return s.length() > 2;
-                    }
-                })
-                .switchMap(new Function<String, Observable<ActorSearchResponseDTO>>() {
-                    @Override
-                    public Observable<ActorSearchResponseDTO> apply(@NonNull String s) throws Exception {
-                        return SearchManager.getInstance().searchActorByName(s).doOnError(new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                throwable.printStackTrace();
-                            }
-                        }).toObservable().retry();
-                    }
-                })
-                .compose(Rx.<ActorSearchResponseDTO>applySchedulers())
-                .retry()
-                .subscribe(new Consumer<ActorSearchResponseDTO>() {
-                    @Override
-                    public void accept(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
-                        ArrayList<Actor> actors = PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
-                        actorAdapter.setActors(actors);
-                        DataProvider.getInstance().setActors(actors);
-                        actorAdapter.notifyDataSetChanged();
-                    }
-                });
+    private void showSearch() {
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
     }
 
-    // Subscribers have to be mindful of android's app lifecycle.
+    private void hideSearch() {
+        progressBar.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    protected void initSearchView(View view, String initText) {
+        hideSearch();
+        Observable<String> textStream =
+                // subscriberHolder.add(
+                RxSearch.fromSearchView(searchView, initText)
+                        .debounce(300, TimeUnit.MILLISECONDS)
+                        .filter(new Predicate<String>() {
+                            @Override
+                            public boolean test(@NonNull String s) throws Exception {
+                                return s.length() > 2;
+                            }
+                        });
+
+        textStream.compose(Rx.<String>applySchedulers())
+                    .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        showSearch();
+                    }
+                });
+
+
+        textStream.switchMap(new Function<String, ObservableSource<ArrayList<Actor>>>() {
+            @Override
+            public ObservableSource<ArrayList<Actor>> apply(@NonNull String s) throws Exception {
+                if (s.startsWith(ACTORS_NAME_QUERY)) {
+                    String actorName = s.substring(ACTORS_NAME_QUERY.length());
+                    return DataProvider.getInstance().getDb().actorDAO().findByName(actorName).toObservable()
+                            .retry()
+                            .map(new Function<List<Actor>, ArrayList<Actor>>() {
+                                @Override
+                                public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                                    return new ArrayList<>(actors);
+                                }
+                            });
+                } else if (s.startsWith(DIRECTOR_NAME_QUERY)) {
+                    String directorName = s.substring(DIRECTOR_NAME_QUERY.length());
+                    return ActorDbService.findByDirectorName(directorName)
+                            .toObservable()
+                            .retry()
+                            .map(new Function<List<Actor>, ArrayList<Actor>>() {
+                                @Override
+                                public ArrayList<Actor> apply(@NonNull List<Actor> actors) throws Exception {
+                                    return new ArrayList<>(actors);
+                                }
+                            });
+                } else {
+                    return SearchManager.getInstance().searchActorByName(s).doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@NonNull Throwable throwable) throws Exception {
+                            throwable.printStackTrace();
+                        }
+                    })
+                    .onErrorReturn(new Function<Throwable, ActorSearchResponseDTO>() {
+                        @Override
+                        public ActorSearchResponseDTO apply(@NonNull Throwable throwable) throws Exception {
+                            return new ActorSearchResponseDTO();
+                        }
+                    })
+                    .toObservable()
+                    .map(new Function<ActorSearchResponseDTO, ArrayList<Actor>>() {
+                        @Override
+                        public ArrayList<Actor> apply(@NonNull ActorSearchResponseDTO actorSearchResponseDTO) throws Exception {
+                            return PersonMapper.getActorModels(actorSearchResponseDTO.getActors());
+                        }
+                    });
+                }
+            }
+        })
+                .compose(Rx.<ArrayList<Actor>>applySchedulers())
+                .subscribe(new Consumer<ArrayList<Actor>>() {
+                    @Override
+                    public void accept(@NonNull ArrayList<Actor> actors) throws Exception {
+                        actorAdapter.setActors(actors);
+                        actorAdapter.notifyDataSetChanged();
+                        DataProvider.getInstance().setActors(actors);
+                        hideSearch();
+                    }
+                });
+        //);
+    }
+
+    // Subscribers have to be mindful of Android's app lifecycle.
     @Override
     public void onPause() {
         super.onPause();
@@ -181,6 +251,8 @@ public class ActorListFragment extends Fragment implements ITaggable {
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         recyclerView.setHasFixedSize(true);
+
+        hideSearch();
     }
 
     public interface OnFragmentInteractionListener {

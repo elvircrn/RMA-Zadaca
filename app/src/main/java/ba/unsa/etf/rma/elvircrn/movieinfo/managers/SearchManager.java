@@ -2,6 +2,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.ActorSearchResponseDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.ISearchService;
 import io.reactivex.Single;
 
@@ -23,9 +24,14 @@ public class SearchManager {
         return service.searchActorsByName(name);
     }
 
+    public Single<MovieSearchResponseDTO> searchMovieByName(String name) {
+        return service.searchMovieByName(name);
+    }
+
     public static SearchManager getInstance() {
         return LazyHolder.INSTANCE;
     }
+
 }
 
 

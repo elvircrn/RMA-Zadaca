@@ -9,48 +9,31 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Optional;
+import butterknife.Unbinder;
 
 public class ButtonsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private Unbinder unbinder;
 
-    public ButtonsFragment() {
-        // Required empty public constructor
+    @Optional
+    @OnClick({R.id.actorsButton, R.id.genresButton, R.id.directorsButton,
+            R.id.moviesButton, R.id.othersButton, R.id.actorsButtonWide,
+            R.id.moviesButtonWide})
+    public void onClick(View v) {
+        if (mListener != null)
+            mListener.onFragmentInteraction(v);
     }
 
-    public static ButtonsFragment newInstance(String param1, String param2) {
-        ButtonsFragment fragment = new ButtonsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
+    public ButtonsFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_buttons, container, false);
-        for (int i = 0; i < view.getChildCount(); i++) {
-            View v = view.getChildAt(i);
-            if (v instanceof Button) {
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mListener.onFragmentInteraction(v);
-                    }
-                });
-            }
-        }
-
+        View view = inflater.inflate(R.layout.fragment_buttons, container, false);
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -66,10 +49,17 @@ public class ButtonsFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(View v);

@@ -12,6 +12,13 @@ android {
         multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
+
     }
     buildTypes {
         release {
@@ -34,7 +41,6 @@ android {
     }
 
 
-
 }
 
 dependencies {
@@ -43,39 +49,40 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.facebook.stetho:stetho-urlconnection:1.5.0'
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+    compile 'com.facebook.stetho:stetho:1.5.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:support-v4:24.2.1'
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-
     compile 'com.google.code.gson:gson:2.6.2'
-
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
-
     compile 'io.reactivex.rxjava2:rxandroid:2.0.0'
-    compile "io.reactivex.rxjava2:rxjava:2.1.0"
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'com.jakewharton:butterknife:8.6.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
-
-
-
     compile 'com.squareup.sqlbrite:sqlbrite:1.1.1'
-
-    compile "android.arch.persistence.room:runtime:1.0.0-alpha1"
-    annotationProcessor "android.arch.persistence.room:compiler:1.0.0-alpha1"
-    compile "android.arch.persistence.room:rxjava2:1.0.0-alpha1"
-
-
-
+    compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
+    compile 'android.arch.persistence.room:rxjava2:1.0.0-alpha1'
+    compile 'org.jetbrains:annotations-java5:15.0'
     testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+    annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
 }

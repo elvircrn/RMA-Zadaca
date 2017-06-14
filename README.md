@@ -7,6 +7,59 @@ Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 
 # 2016/2017
 # RMA
 
+Svaki zadatak je implementiran!
+
+# Spirala 4
+Za potrebe ove spirale sam koristio https://developer.android.com/topic/libraries/architecture/room.html.
+
+RxJava2 + Room + Retrofit -> :muscle: :muscle: :muscle:
+```java
+ActorDbService.getFullActor(actor.getId())
+        .mergeWith(PeopleManager.getInstance().getFullActor(actor))
+        .compose(Rx.<Actor>applySchedulers())
+        .filter(new Predicate<Actor>() {
+            @Override
+            public boolean test(@NonNull Actor actor) throws Exception {
+                return actor.getId() != -1;
+            }
+        })
+        .take(1)
+        .subscribe(new Consumer<Actor>() {
+            @Override
+            public void accept(@NonNull Actor actor) throws Exception {
+                binding.setActor(actor);
+                binding.notifyChange();
+                BiographyFragment.this.actor = actor;
+                bookmarked.setEnabled(true);
+                hideProgress();
+            }
+        })
+```
+
+# Zadatak 1
+a) Implementirano
+
+b) Implementirano
+
+c) Implementirano
+
+# Zadatak 2
+Implementirano
+
+# Zadatak 3
+a) Implementirano
+
+b) Implementirano
+
+# Zadatak 4
+
+a) Implementirano
+
+b) Implementirano
+
+c) Implementirano
+
+
 # Spirala 3
 
 # Napomena
@@ -64,11 +117,14 @@ Sve stavke implementirane.
 
 ## Zadatak 3
 a) Implementirano
+
 b) Implementirano
+
 c) Implementirano
 
 ## Zadatak 4
 a) Implementirano
+
 b) Implementirano
 
 

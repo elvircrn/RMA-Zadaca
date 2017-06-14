@@ -3,6 +3,7 @@ package ba.unsa.etf.rma.elvircrn.movieinfo.managers;
 import ba.unsa.etf.rma.elvircrn.movieinfo.factories.services.ServiceFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieCreditsDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieSearchResponseDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.interfaces.IMovieService;
 import io.reactivex.Single;
 

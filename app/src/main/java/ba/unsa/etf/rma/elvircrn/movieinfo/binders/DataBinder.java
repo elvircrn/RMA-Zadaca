@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import ba.unsa.etf.rma.elvircrn.movieinfo.R;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
@@ -26,6 +27,7 @@ public class DataBinder {
         if (url != null && !url.isEmpty()) {
             Glide.with(imageView.getContext())
                     .load(url)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
                     .into(imageView);
         } else {

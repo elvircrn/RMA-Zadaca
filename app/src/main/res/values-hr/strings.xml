@@ -11,4 +11,7 @@
     <string name="flag">flag_ba</string>
     <string name="bio_toast_error">Neuspjesno dobavljanje</string>
     <string name="imdb_toast_error">Imdb link ne postoji</string>
+    <string name="movies">Filmovi</string>
+    <string name="save">Spasi</string>
+    <string name="bookmarked">Bukmarkovano</string>
 </resources>

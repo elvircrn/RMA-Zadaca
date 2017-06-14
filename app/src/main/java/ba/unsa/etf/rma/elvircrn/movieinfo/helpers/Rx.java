@@ -23,6 +23,16 @@ public class Rx {
         };
     }
 
+    public static <T> ObservableTransformer<T, T> applyDbSchedulers() {
+        return new ObservableTransformer<T, T>() {
+            @Override
+            public ObservableSource<T> apply(@NonNull Observable<T> upstream) {
+                return upstream.subscribeOn(Schedulers.newThread())
+                        .observeOn(Schedulers.newThread());
+            }
+        };
+    }
+
     public static <T> ObservableTransformer<T, T> applyError() {
         return new ObservableTransformer<T, T>() {
             @Override

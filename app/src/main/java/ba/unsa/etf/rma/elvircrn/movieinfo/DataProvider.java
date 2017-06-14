@@ -3,12 +3,17 @@ package ba.unsa.etf.rma.elvircrn.movieinfo;
 
 import java.util.ArrayList;
 
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.AppDatabase;
+import ba.unsa.etf.rma.elvircrn.movieinfo.dal.DatabaseFactory;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Actor;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Director;
 import ba.unsa.etf.rma.elvircrn.movieinfo.models.Genre;
+import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
 
 public class DataProvider {
     private static DataProvider instance = null;
+
+    private AppDatabase db;
 
     public ArrayList<Actor> getActors() {
         return actors;
@@ -36,6 +41,16 @@ public class DataProvider {
 
     private ArrayList<Genre> genres;
 
+    public ArrayList<Movie> getMovies() {
+        return movies;
+    }
+
+    public void setMovies(ArrayList<Movie> movies) {
+        this.movies = movies;
+    }
+
+    private ArrayList<Movie> movies;
+
     public ArrayList<Genre> getSelectedGenres() {
         return selectedGenres;
     }
@@ -55,12 +70,21 @@ public class DataProvider {
         actors = new ArrayList<>();
         directors = new ArrayList<>();
         genres = new ArrayList<>();
+        movies = new ArrayList<>();
+    }
+
+    public static void initDatabase(AppDatabase db) {
+        getInstance().db = db;
     }
 
     public static DataProvider getInstance() {
         if (instance == null)
             instance = new DataProvider();
         return instance;
+    }
+
+    public AppDatabase getDb() {
+        return db;
     }
 
     private void clear() {
@@ -87,10 +111,10 @@ public class DataProvider {
     }
 
     void seedGenres() {
-        genres.add(new Genre("Horror", "horror").addTranslation("hrvatski", "Horor").addTranslation("bosanski", "Horor"));
-        genres.add(new Genre("Comedy", "comedy").addTranslation("hrvatski", "Komedija").addTranslation("bosanski", "Komedija"));
-        genres.add(new Genre("Drama", "drama").addTranslation("hrvatski", "Drama").addTranslation("bosanski", "Drama"));
-        genres.add(new Genre("SciFi", "scifi").addTranslation("hrvatski", "SciFi").addTranslation("bosanski", "Scifi"));
+        genres.add(new Genre("Horror", "horror"));
+        genres.add(new Genre("Comedy", "comedy"));
+        genres.add(new Genre("Drama", "drama"));
+        genres.add(new Genre("SciFi", "scifi"));
     }
 
     void seedDirectors() {

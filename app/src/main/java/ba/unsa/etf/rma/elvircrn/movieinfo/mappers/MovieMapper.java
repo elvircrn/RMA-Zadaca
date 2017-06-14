@@ -8,6 +8,7 @@ import ba.unsa.etf.rma.elvircrn.movieinfo.models.Movie;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CastItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.CrewItemDTO;
 import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieDTO;
+import ba.unsa.etf.rma.elvircrn.movieinfo.services.dto.MovieSearchResponseDTO;
 
 public class MovieMapper {
     public static Movie toMovie(MovieDTO movieDTO) {
@@ -19,6 +20,7 @@ public class MovieMapper {
         movie.setReleaseDate(movieDTO.getReleaseDate());
         movie.setFirstAirDate(movieDTO.getFirstAirDate());
         movie.setId(movieDTO.getId());
+        movie.setTitle(movieDTO.getTitle());
         return movie;
     }
 
@@ -28,6 +30,14 @@ public class MovieMapper {
         movie.setName(castItemDTO.getTitle());
         movie.setReleaseDate(castItemDTO.getReleaseDate());
         return movie;
+    }
+
+    public static ArrayList<Movie> toMoviesFromSearch(MovieSearchResponseDTO movieSearchResponseDTOs) {
+        ArrayList<Movie> movies = new ArrayList<>();
+        for (MovieDTO movieDTO : movieSearchResponseDTOs.getMovieDTOs()) {
+            movies.add(toMovie(movieDTO));
+        }
+        return movies;
     }
 
     public static List<Movie> toMovieList(List<CastItemDTO> castItemDTOs) {

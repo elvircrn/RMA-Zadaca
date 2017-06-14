@@ -184,6 +184,14 @@ public class Movie implements Parcelable {
     }
 
     public Movie() {
+        this.title = "";
+        this.name = "";
+    }
+
+    public Movie(int id, String title) {
+        this.id = id;
+        this.name = title;
+        this.title = title;
     }
 
     @Override
