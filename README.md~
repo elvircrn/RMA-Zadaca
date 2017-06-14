@@ -11,8 +11,6 @@ Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 
 Za potrebe ove spirale sam koristio https://developer.android.com/topic/libraries/architecture/room.html.
 
 RxJava2 + Room + Retrofit -> :muscle: :muscle: :muscle:
-
-Sljedeci kod u biografiji glumca zatrazi sve informacije o glumcu sa servisa i iz baze, pri cemu uzima one podatke koji prvi dodju.
 ```java
 ActorDbService.getFullActor(actor.getId())
         .mergeWith(PeopleManager.getInstance().getFullActor(actor))
@@ -57,7 +55,7 @@ a) Implementirano
 
 b) Implementirano
 
-c)
+c) Implementirano
 
 
 # Spirala 3

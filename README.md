@@ -7,6 +7,8 @@ Iako zadnji commit objedinjuje obje parcijale po sadrzaju, napominjem da commit 
 # 2016/2017
 # RMA
 
+Svaki zadatak je implementiran!
+
 # Spirala 4
 Za potrebe ove spirale sam koristio https://developer.android.com/topic/libraries/architecture/room.html.
 
@@ -55,7 +57,7 @@ a) Implementirano
 
 b) Implementirano
 
-c)
+c) Implementirano
 
 
 # Spirala 3
