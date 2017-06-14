@@ -10,6 +10,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -67,6 +68,19 @@ public class MovieCalendarFragment extends Fragment {
         }
     }
 
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 2;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR
+                && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveInfo();
+        }
+    }
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -81,17 +95,34 @@ public class MovieCalendarFragment extends Fragment {
     @BindView(R.id.detailsEditText)
     EditText detailsText;
 
-    void checkPermissions() {
-        // Assume thisActivity is the current activity
+    void checkPermissionsAndSave() {
         int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.WRITE_CALENDAR);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{ Manifest.permission.WRITE_CALENDAR }, 2);
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                        Manifest.permission.WRITE_CALENDAR)) {
+
+                    // Show an explanation to the user *asynchronously* -- don't block
+                    // this thread waiting for the user's response! After the user
+                    // sees the explanation, try again to request the permission.
+
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.WRITE_CALENDAR},
+                            MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+                }
+            }
+        } else {
+            saveInfo();
         }
     }
 
-    private MyCalendar [] getCalendar(Context c) {
+    private MyCalendar[] getCalendar(Context c) {
 
         String projection[] = {"_id", "calendar_displayName"};
         Uri calendars;
@@ -101,10 +132,10 @@ public class MovieCalendarFragment extends Fragment {
         Cursor managedCursor = contentResolver.query(calendars, projection, null, null, null);
         mCalendars = new MyCalendar[managedCursor.getCount()];
 
-        if (managedCursor.moveToFirst()){
+        if (managedCursor.moveToFirst()) {
             String calName;
             int calID;
-            int cont= 0;
+            int cont = 0;
             int nameCol = managedCursor.getColumnIndex(projection[1]);
             int idCol = managedCursor.getColumnIndex(projection[0]);
             do {
@@ -112,31 +143,36 @@ public class MovieCalendarFragment extends Fragment {
                 calID = managedCursor.getInt(idCol);
                 mCalendars[cont] = new MyCalendar(calID, calName);
                 cont++;
-            } while(managedCursor.moveToNext());
+            } while (managedCursor.moveToNext());
             managedCursor.close();
         }
         return mCalendars;
 
     }
 
-
-    @OnClick(R.id.saveButton)
-    public void saveDate(View view) {
+    private int getDefaultCalendar() {
         MyCalendar[] calendars = getCalendar(getContext());
         int defaultCalendar;
 
         if (calendars.length == 0) {
             ContentValues values = new ContentValues();
             values.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "Prvi");
-            values.put(CalendarContract.Calendars.NAME,"Prvi");
+            values.put(CalendarContract.Calendars.NAME, "Prvi");
             Uri updateUri = CalendarContract.Calendars.CONTENT_URI;
             Uri uri = getContext().getContentResolver().insert(updateUri, values);
-            defaultCalendar = 1;
+            return 1;
         } else {
-            defaultCalendar = calendars[0].getId();
+            return calendars[0].getId();
         }
+    }
 
-        checkPermissions();
+
+    @OnClick(R.id.saveButton)
+    public void saveDate(View view) {
+        checkPermissionsAndSave();
+    }
+
+    private void saveInfo() {
         Calendar beginTime = Calendar.getInstance();
         beginTime.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), 7, 30);
 
@@ -146,8 +182,9 @@ public class MovieCalendarFragment extends Fragment {
         cv.put(CalendarContract.Events.DESCRIPTION, detailsText.getText().toString());
         cv.put(CalendarContract.Events.DTSTART, beginTime.getTimeInMillis());
         cv.put(CalendarContract.Events.DTEND, beginTime.getTimeInMillis() + 60 * 60 * 1000);
-        cv.put(CalendarContract.Events.CALENDAR_ID, defaultCalendar);
+        cv.put(CalendarContract.Events.CALENDAR_ID, getDefaultCalendar());
         cv.put(CalendarContract.Events.EVENT_TIMEZONE, Calendar.getInstance().getTimeZone().getID());
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, cv);
+
     }
 }
